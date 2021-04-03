@@ -9,7 +9,6 @@ PointerAlignment: Right
 BreakBeforeBraces: Allman
 AllowShortIfStatementsOnASingleLine: true
 IndentCaseLabels: false
-ColumnLimit: 100
+ColumnLimit: 120
 BreakConstructorInitializers: AfterColon
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
-IndentAccessModifiers: false

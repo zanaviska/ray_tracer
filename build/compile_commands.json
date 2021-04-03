@@ -1,0 +1,7 @@
+[
+{
+  "directory": "C:/Users/user/Desktop/proj/plus/build/src",
+  "command": "C:\\mingw64\\bin\\g++.exe   -g -std=c++2a -o CMakeFiles\\project.dir\\main.cpp.obj -c C:\\Users\\user\\Desktop\\proj\\plus\\src\\main.cpp",
+  "file": "C:/Users/user/Desktop/proj/plus/src/main.cpp"
+}
+]

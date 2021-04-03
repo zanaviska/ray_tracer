@@ -1,0 +1,1 @@
+/bin/x86_64-linux-gnu-g++-10 CMakeFiles/project.dir/main.cpp.o -o ../../bin/project 
