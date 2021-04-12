@@ -20,6 +20,11 @@ point operator-(point lhs, point rhs)
     return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
 }
 
+point operator+(point lhs, point rhs)
+{
+    return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
+}
+
 point operator*(point lhs, double rhs)
 {
     return {lhs.x * rhs, lhs.y * rhs, lhs.z * rhs};
@@ -73,10 +78,60 @@ void save_to_file(const std::vector<std::vector<color>> &image, const std::strin
     });
 }
 
+double area(triangle arg)
+{
+    point a = arg.vertexes[0];
+    point b = arg.vertexes[1];
+    point c = arg.vertexes[2];
+
+    double x = sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z));
+    double y = sqrt((a.x - c.x) * (a.x - c.x) + (a.y - c.y) * (a.y - c.y) + (a.z - c.z) * (a.z - c.z));
+    double z = sqrt((c.x - b.x) * (c.x - b.x) + (c.y - b.y) * (c.y - b.y) + (c.z - b.z) * (c.z - b.z));
+    double p = (x + y + z) / 2;
+    return sqrt(p * (p - x) * (p - y) * (p - z));
+}
+
+point cross_product(point lhs, point rhs)
+{
+    return {lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x};
+}
+
+double dot_product(point lhs, point rhs)
+{
+    return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+}
+
+double sqr(double arg)
+{
+    return arg*arg;
+}
+
+double intersect(triangle trik, point start, point middle)
+{
+    point plane_normal = cross_product((trik[0] - trik[1]), (trik[2] - trik[1]));
+    point ray_normal = middle - start;
+
+    // does ray and plane intersect?
+    double prod1 = dot_product(plane_normal, ray_normal);
+    if (abs(prod1) < eps) return -2;
+
+    // find intersect of ray and plane
+    double t = dot_product(plane_normal, trik[0] - start) / prod1;
+    point inter = ray_normal * t + start;
+
+    std::cout << "intersect: (" << inter.x << ' ' << inter.y << ' ' << inter.z << ")\n";
+
+    // does triangle contain intersect
+    std::cout << area(trik) << ' ' << area({trik[0], trik[1], inter})  << ' ' << area({trik[0], trik[2], inter})  << ' ' <<  area({trik[2], trik[1], inter}) << '\n';
+    if (abs(area(trik) - area({trik[0], trik[1], inter}) - area({trik[0], trik[2], inter}) - area({trik[2], trik[1], inter})) > eps) return -2;
+    
+    return sin(abs(prod1)/(sqrt(sqr(plane_normal.x) + sqr(plane_normal.y) + sqr(plane_normal.z))*sqrt(sqr(ray_normal.x) + sqr(ray_normal.y) + sqr(ray_normal.z))));
+}
+
 int main()
 {
-    // intersect({point{0, 0, 0}, {0, 0, 1}, {0, 1, 0}}, {100, 0, 0}, {0, 5, 5});
-    // return 0;
+    std::cout << intersect({point{0, 3, 3}, {0, 0, 3}, {0, 3, 0}}, {100, 0, 0}, {50, 1.5, 1.5});
+    return 0;
     std::ifstream fin("cow.obj");
     std::string line;
     std::vector<point> vertexes;
