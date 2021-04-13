@@ -79,15 +79,15 @@ include src/CMakeFiles/project.dir/flags.make
 src/CMakeFiles/project.dir/main.cpp.o: src/CMakeFiles/project.dir/flags.make
 src/CMakeFiles/project.dir/main.cpp.o: ../src/main.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/user/Desktop/proj/plus/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/CMakeFiles/project.dir/main.cpp.o"
-	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/project.dir/main.cpp.o -c /mnt/c/Users/user/Desktop/proj/plus/src/main.cpp
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/project.dir/main.cpp.o -c /mnt/c/Users/user/Desktop/proj/plus/src/main.cpp
 
 src/CMakeFiles/project.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/project.dir/main.cpp.i"
-	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/user/Desktop/proj/plus/src/main.cpp > CMakeFiles/project.dir/main.cpp.i
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/user/Desktop/proj/plus/src/main.cpp > CMakeFiles/project.dir/main.cpp.i
 
 src/CMakeFiles/project.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/project.dir/main.cpp.s"
-	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/user/Desktop/proj/plus/src/main.cpp -o CMakeFiles/project.dir/main.cpp.s
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/user/Desktop/proj/plus/src/main.cpp -o CMakeFiles/project.dir/main.cpp.s
 
 # Object files for target project
 project_OBJECTS = \

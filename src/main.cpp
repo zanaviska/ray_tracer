@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <iomanip>
 
 const double eps = 1e-7;
 
@@ -28,6 +29,11 @@ point operator+(point lhs, point rhs)
 point operator*(point lhs, double rhs)
 {
     return {lhs.x * rhs, lhs.y * rhs, lhs.z * rhs};
+}
+
+std::ostream& operator <<(std::ostream& out, point p)
+{
+    return out << '{' << p.x << ' ' << p.y << ' ' << p.z << '}';
 }
 
 struct triangle
@@ -78,17 +84,9 @@ void save_to_file(const std::vector<std::vector<color>> &image, const std::strin
     });
 }
 
-double area(triangle arg)
+double sqr(double arg)
 {
-    point a = arg.vertexes[0];
-    point b = arg.vertexes[1];
-    point c = arg.vertexes[2];
-
-    double x = sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z));
-    double y = sqrt((a.x - c.x) * (a.x - c.x) + (a.y - c.y) * (a.y - c.y) + (a.z - c.z) * (a.z - c.z));
-    double z = sqrt((c.x - b.x) * (c.x - b.x) + (c.y - b.y) * (c.y - b.y) + (c.z - b.z) * (c.z - b.z));
-    double p = (x + y + z) / 2;
-    return sqrt(p * (p - x) * (p - y) * (p - z));
+    return arg*arg;
 }
 
 point cross_product(point lhs, point rhs)
@@ -96,42 +94,62 @@ point cross_product(point lhs, point rhs)
     return {lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x};
 }
 
+double area(triangle arg)
+{
+    auto diamond = cross_product(arg[0]-arg[1], arg[0]-arg[2]);
+    return sqrtl(sqr(diamond.x) + sqr(diamond.y) + sqr(diamond.z))/2;
+    // point a = arg.vertexes[0];
+    // point b = arg.vertexes[1];
+    // point c = arg.vertexes[2];
+
+    // double x = sqrt(sqr(a.x - b.x) + sqr(a.y - b.y) + sqr(a.z - b.z));
+    // double y = sqrt(sqr(a.x - c.x) + sqr(a.y - c.y) + sqr(a.z - c.z));
+    // double z = sqrt(sqr(c.x - b.x) + sqr(c.y - b.y) + sqr(c.z - b.z));
+    // std::cout << arg[0] << ' ' << arg[1] << ' ' << arg[2] << '\n';
+    // std::cout << std::setprecision(15) << x << ' ' << y << ' ' << z <<  ' ' << (x + y + z)/2 << '\n';
+    // double p = (x + y + z) / 2;
+    // std::cout <<std::setprecision(15) << p << ' ' << (p - x) << ' ' << (p - y) << ' ' << (p - z) << '\n';
+    // return sqrt(p * (p - x) * (p - y) * (p - z));
+}
+
 double dot_product(point lhs, point rhs)
 {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 }
 
-double sqr(double arg)
-{
-    return arg*arg;
-}
-
-double intersect(triangle trik, point start, point middle)
+//first -- distance to intersect
+//second -- degree of intersect
+std::pair<double, double> intersect(triangle trik, point start, point middle)
 {
     point plane_normal = cross_product((trik[0] - trik[1]), (trik[2] - trik[1]));
     point ray_normal = middle - start;
 
     // does ray and plane intersect?
     double prod1 = dot_product(plane_normal, ray_normal);
-    if (abs(prod1) < eps) return -2;
+    if (std::fabs(prod1) < eps) return {10000, -2};
 
     // find intersect of ray and plane
     double t = dot_product(plane_normal, trik[0] - start) / prod1;
     point inter = ray_normal * t + start;
 
-    std::cout << "intersect: (" << inter.x << ' ' << inter.y << ' ' << inter.z << ")\n";
 
     // does triangle contain intersect
+    if (std::fabs(area(trik) - area({trik[0], trik[1], inter}) - area({trik[0], trik[2], inter}) - area({trik[2], trik[1], inter})) > eps) 
+        return {10000, -2};
+    if(middle.y< -0.5)
+    {
+        std::cout << "------------------------------------------------------------\n";
+    std::cout << std::setprecision(15) << std::fabs(area(trik) - area({trik[0], trik[1], inter}) - area({trik[0], trik[2], inter}) - area({trik[2], trik[1], inter})) << '\n';
+    std::cout << trik[0] << ' ' << trik[1] << ' ' << trik[2] << '\n';
+    std::cout << "intersect: (" << inter.x << ' ' << inter.y << ' ' << inter.z << ")\n";
     std::cout << area(trik) << ' ' << area({trik[0], trik[1], inter})  << ' ' << area({trik[0], trik[2], inter})  << ' ' <<  area({trik[2], trik[1], inter}) << '\n';
-    if (abs(area(trik) - area({trik[0], trik[1], inter}) - area({trik[0], trik[2], inter}) - area({trik[2], trik[1], inter})) > eps) return -2;
+    }
     
-    return sin(abs(prod1)/(sqrt(sqr(plane_normal.x) + sqr(plane_normal.y) + sqr(plane_normal.z))*sqrt(sqr(ray_normal.x) + sqr(ray_normal.y) + sqr(ray_normal.z))));
+    return {5, std::fabs(prod1)/(sqrt(sqr(plane_normal.x) + sqr(plane_normal.y) + sqr(plane_normal.z))*sqrt(sqr(ray_normal.x) + sqr(ray_normal.y) + sqr(ray_normal.z)))};
 }
 
 int main()
 {
-    std::cout << intersect({point{0, 3, 3}, {0, 0, 3}, {0, 3, 0}}, {100, 0, 0}, {50, 1.5, 1.5});
-    return 0;
     std::ifstream fin("cow.obj");
     std::string line;
     std::vector<point> vertexes;
@@ -152,4 +170,30 @@ int main()
             triangles.push_back({{vertexes[ver1], vertexes[ver2], vertexes[ver3]}});
         }
     }
+    const int64_t height = 100;
+    const int64_t width = 100;
+    std::vector<std::vector<color>> image(height, std::vector<color>(width, {0, 0, 0}));
+    std::cout << "image was generated\n";
+    for(int64_t i = 0; i < height && std::cout << i << '\n'; i++)
+        for(int64_t j = 0; j < width; j++)
+        {
+            std::pair<double, double> res = {100000, -2};
+            // std::cout << point({(2.0*i - height)/height, (j*2.0 - width)/width, 0}) << '\n';
+            for(auto &trik: triangles)
+            {
+                auto inter = intersect(trik, {0, 0, 100}, {(2.0*i - height)/height, (j*2.0 - width)/width, 0});
+                res = std::min(res, inter);
+                // image[i][j] = {(inter+2)*100, (inter+2)*100, (inter+2)*100};
+            if(res.second != -2 && (j*2.0 - width)/width < -0.5)
+                std::cout << res.second << ' ' << trik[0] << ' ' << trik[1] << ' ' << trik[2] << ' ' << point{(2.0*i - height)/height, (j*2.0 - width)/width, 0} << '\n';
+            }
+            image[i][j] = {(unsigned char)(255*(res.second != -2)), (unsigned char)(255*(res.second != -2)), (unsigned char)(255*(res.second != -2))};
+            // image[i][j] = {(unsigned char)((res.second + 2)*80), (unsigned char)((res.second + 2)*80), (unsigned char)((res.second + 2)*80)};
+
+
+            // std::cout << i << ' ' << j << ' ' << (2.0*i - height)/height << ' ' << res.first << ' ' << res.second << '\n';
+
+            // std::cin.get();
+        }
+    save_to_file(image, "output.bmp");
 }
