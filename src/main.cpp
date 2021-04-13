@@ -79,7 +79,7 @@ void save_to_file(const std::vector<std::vector<color>> &image, const std::strin
     std::for_each(image.rbegin(), image.rend(), [&fout](const auto &line) {
         for (auto &i : line)
             fout << i.blue << i.green << i.red;
-        for (size_t i = 0; i < 4 - 3 * line.size() % 4; i++)
+        for (size_t i = 0; i < (4 - 3 * line.size() % 4)%4; i++)
             fout << 0;
     });
 }
@@ -98,18 +98,6 @@ double area(triangle arg)
 {
     auto diamond = cross_product(arg[0]-arg[1], arg[0]-arg[2]);
     return sqrtl(sqr(diamond.x) + sqr(diamond.y) + sqr(diamond.z))/2;
-    // point a = arg.vertexes[0];
-    // point b = arg.vertexes[1];
-    // point c = arg.vertexes[2];
-
-    // double x = sqrt(sqr(a.x - b.x) + sqr(a.y - b.y) + sqr(a.z - b.z));
-    // double y = sqrt(sqr(a.x - c.x) + sqr(a.y - c.y) + sqr(a.z - c.z));
-    // double z = sqrt(sqr(c.x - b.x) + sqr(c.y - b.y) + sqr(c.z - b.z));
-    // std::cout << arg[0] << ' ' << arg[1] << ' ' << arg[2] << '\n';
-    // std::cout << std::setprecision(15) << x << ' ' << y << ' ' << z <<  ' ' << (x + y + z)/2 << '\n';
-    // double p = (x + y + z) / 2;
-    // std::cout <<std::setprecision(15) << p << ' ' << (p - x) << ' ' << (p - y) << ' ' << (p - z) << '\n';
-    // return sqrt(p * (p - x) * (p - y) * (p - z));
 }
 
 double dot_product(point lhs, point rhs)
