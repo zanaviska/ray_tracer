@@ -25,6 +25,11 @@ struct point
     double z;
 };
 
+bool operator!=(const point lhs, const point rhs)
+{
+    return std::fabs(lhs.x - rhs.x) > eps || std::fabs(lhs.y - rhs.y) > eps || std::fabs(lhs.z - rhs.z) > eps;
+}
+
 std::ostream &operator<<(std::ostream &out, point p)
 {
     return out << '{' << p.x << ' ' << p.y << ' ' << p.z << '}';
@@ -145,6 +150,16 @@ double dot_product(point lhs, point rhs)
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 }
 
+point get_point_intersect(triangle trik, point start, point middle)
+{
+    point plane_normal = cross_product((trik[0] - trik[1]), (trik[2] - trik[1]));
+    point ray_normal = middle - start;
+    double prod1 = dot_product(plane_normal, ray_normal);
+    double t = dot_product(plane_normal, trik[0] - start) / prod1;
+    point inter = ray_normal * t + start;
+    return inter;
+}
+
 // first -- distance to intersect
 // second -- degree of intersect
 std::pair<double, double> intersect(triangle trik, point start, point middle)
@@ -152,13 +167,12 @@ std::pair<double, double> intersect(triangle trik, point start, point middle)
     point plane_normal = cross_product((trik[0] - trik[1]), (trik[2] - trik[1]));
     point ray_normal = middle - start;
 
-    // does ray and plane intersect?
+    // // does ray and plane intersect?
     double prod1 = dot_product(plane_normal, ray_normal);
     if (std::fabs(prod1) < eps) return {10000, -2};
 
-    // find intersect of ray and plane
-    double t = dot_product(plane_normal, trik[0] - start) / prod1;
-    point inter = ray_normal * t + start;
+    // // find intersect of ray and plane
+    point inter = get_point_intersect(trik, start, middle);
 
     // does triangle contain intersect
     if (std::fabs(area(trik) - area({trik[0], trik[1], inter}) - area({trik[0], trik[2], inter}) -
@@ -312,13 +326,19 @@ class tree
     }
 
   public:
-    std::pair<double, double> intersect(point start, point middle)
+    double intersect(point start, point middle, point light)
     {
         auto root_ptr = root.get();
         // std::cout << (size_t)(root_ptr) << '\n';
         auto trik = intersect(root_ptr, start, middle);
-        if (!trik.has_value()) return {100000, -2};
-        return ::intersect(trik.value(), start, middle);
+        if (!trik.has_value()) return -2;
+        auto res = ::intersect(trik.value(), start, middle);
+        if (res.second == -2) return -2;
+        point inter = get_point_intersect(trik.value(), start, middle);
+        auto shade = intersect(root_ptr, light, inter);
+        if (!shade.has_value()) return 0;
+        if (inter != get_point_intersect(shade.value(), light, inter)) return 0;
+        return ::intersect(shade.value(), light, inter).second;
     }
     void insert(triangle new_elem)
     {
@@ -344,10 +364,9 @@ class tree
     }
     void show()
     {
-        std::cout << root.get() << '\n';
-        // std::string prefix = "";
-        // show(root.get(), prefix);
-        // std::cout << "---------------------\n";
+        std::string prefix = "";
+        show(root.get(), prefix);
+        std::cout << "---------------------\n";
     }
 };
 
@@ -376,46 +395,23 @@ int main()
             tr.insert({{vertexes[ver1 - 1], vertexes[ver2 - 1], vertexes[ver3 - 1]}});
         }
     }
-    tr.show();
     auto read_end = high_resolution_clock::now();
     std::cout << "read and insert in tree took " << duration_cast<milliseconds>(read_end - start).count() << "ms\n";
-    // auto x = tr.intersect({00, 100, 00}, {0, 0, 0});
-    // std::cout << x.first << ' ' << x.second << '\n';
-    // return 0;
-    // tr.show();
-    // std::cin.get();
 
-    // return 0;
     const int64_t height = 720;
     const int64_t width = 720;
     std::vector<std::vector<color>> image(width, std::vector<color>(height, {0, 0, 0}));
 
-    std::vector<std::thread> thrds;
+    const point light = {5, 5, 5};
     for (int64_t i = 0; i < width; i++)
         for (int64_t j = 0; j < height; j++)
         {
-            std::pair<double, double> res =
-                tr.intersect({00, 100, 00}, {(2.0 * i - width) / width, 0, (j * 2.0 - height) / height});
+            double res = tr.intersect({00, 10, 00}, {(2.0 * i - width) / width, 0, (j * 2.0 - height) / height}, light);
 
-            if (res.second == -2) res.second = -1;
-            unsigned char color = (1 - std::fabs(res.second)) * 255;
-            image[i][j] = {color, color, color};
+            if (res == -2) continue;
+            unsigned char color = (std::fabs(res) + 0.5) / 1.5 * 255;
+            image[i][j] = {0, color, 0};
         }
-    /*const size_t proc_num = 11;
-    for (int64_t i = 0; i < width && std::cout << i << '\n'; i++)
-        for (int64_t j = 0; j < height; j++)
-        {
-            std::pair<double, double> res = {100000, -2};
-            for (auto &trik : triangles)
-            {
-                auto inter =
-                    intersect(trik, {00, 100, 00}, {(2.0 * i - width) / width, 0, (j * 2.0 - height) / height});
-                res = std::min(res, inter);
-            }
-            if (res.second == -2) res.second = -1;
-            unsigned char color = (1 - std::fabs(res.second)) * 255;
-            image[i][j] = {color, color, color};
-        }*/
     auto end = high_resolution_clock::now();
     std::cout << "ray tracing itself took " << duration_cast<milliseconds>(end - read_end).count() << "ms\n";
     save_to_file(image, "output.bmp");
