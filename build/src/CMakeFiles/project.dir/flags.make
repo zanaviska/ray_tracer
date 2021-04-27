@@ -4,7 +4,7 @@
 # compile CXX with /bin/x86_64-linux-gnu-g++-10
 CXX_DEFINES = 
 
-CXX_INCLUDES = 
+CXX_INCLUDES = -I/mnt/c/Users/user/Desktop/proj/plus/include
 
 CXX_FLAGS = -g -std=c++2a
 

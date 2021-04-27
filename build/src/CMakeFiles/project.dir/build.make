@@ -89,17 +89,77 @@ src/CMakeFiles/project.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/project.dir/main.cpp.s"
 	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/user/Desktop/proj/plus/src/main.cpp -o CMakeFiles/project.dir/main.cpp.s
 
+src/CMakeFiles/project.dir/point.cpp.o: src/CMakeFiles/project.dir/flags.make
+src/CMakeFiles/project.dir/point.cpp.o: ../src/point.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/user/Desktop/proj/plus/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object src/CMakeFiles/project.dir/point.cpp.o"
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/project.dir/point.cpp.o -c /mnt/c/Users/user/Desktop/proj/plus/src/point.cpp
+
+src/CMakeFiles/project.dir/point.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/project.dir/point.cpp.i"
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/user/Desktop/proj/plus/src/point.cpp > CMakeFiles/project.dir/point.cpp.i
+
+src/CMakeFiles/project.dir/point.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/project.dir/point.cpp.s"
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/user/Desktop/proj/plus/src/point.cpp -o CMakeFiles/project.dir/point.cpp.s
+
+src/CMakeFiles/project.dir/triangle.cpp.o: src/CMakeFiles/project.dir/flags.make
+src/CMakeFiles/project.dir/triangle.cpp.o: ../src/triangle.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/user/Desktop/proj/plus/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/CMakeFiles/project.dir/triangle.cpp.o"
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/project.dir/triangle.cpp.o -c /mnt/c/Users/user/Desktop/proj/plus/src/triangle.cpp
+
+src/CMakeFiles/project.dir/triangle.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/project.dir/triangle.cpp.i"
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/user/Desktop/proj/plus/src/triangle.cpp > CMakeFiles/project.dir/triangle.cpp.i
+
+src/CMakeFiles/project.dir/triangle.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/project.dir/triangle.cpp.s"
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/user/Desktop/proj/plus/src/triangle.cpp -o CMakeFiles/project.dir/triangle.cpp.s
+
+src/CMakeFiles/project.dir/file_representation.cpp.o: src/CMakeFiles/project.dir/flags.make
+src/CMakeFiles/project.dir/file_representation.cpp.o: ../src/file_representation.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/user/Desktop/proj/plus/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/CMakeFiles/project.dir/file_representation.cpp.o"
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/project.dir/file_representation.cpp.o -c /mnt/c/Users/user/Desktop/proj/plus/src/file_representation.cpp
+
+src/CMakeFiles/project.dir/file_representation.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/project.dir/file_representation.cpp.i"
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/user/Desktop/proj/plus/src/file_representation.cpp > CMakeFiles/project.dir/file_representation.cpp.i
+
+src/CMakeFiles/project.dir/file_representation.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/project.dir/file_representation.cpp.s"
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/user/Desktop/proj/plus/src/file_representation.cpp -o CMakeFiles/project.dir/file_representation.cpp.s
+
+src/CMakeFiles/project.dir/tree.cpp.o: src/CMakeFiles/project.dir/flags.make
+src/CMakeFiles/project.dir/tree.cpp.o: ../src/tree.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/user/Desktop/proj/plus/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object src/CMakeFiles/project.dir/tree.cpp.o"
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/project.dir/tree.cpp.o -c /mnt/c/Users/user/Desktop/proj/plus/src/tree.cpp
+
+src/CMakeFiles/project.dir/tree.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/project.dir/tree.cpp.i"
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/user/Desktop/proj/plus/src/tree.cpp > CMakeFiles/project.dir/tree.cpp.i
+
+src/CMakeFiles/project.dir/tree.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/project.dir/tree.cpp.s"
+	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && /bin/x86_64-linux-gnu-g++-10 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/user/Desktop/proj/plus/src/tree.cpp -o CMakeFiles/project.dir/tree.cpp.s
+
 # Object files for target project
 project_OBJECTS = \
-"CMakeFiles/project.dir/main.cpp.o"
+"CMakeFiles/project.dir/main.cpp.o" \
+"CMakeFiles/project.dir/point.cpp.o" \
+"CMakeFiles/project.dir/triangle.cpp.o" \
+"CMakeFiles/project.dir/file_representation.cpp.o" \
+"CMakeFiles/project.dir/tree.cpp.o"
 
 # External object files for target project
 project_EXTERNAL_OBJECTS =
 
 ../bin/project: src/CMakeFiles/project.dir/main.cpp.o
+../bin/project: src/CMakeFiles/project.dir/point.cpp.o
+../bin/project: src/CMakeFiles/project.dir/triangle.cpp.o
+../bin/project: src/CMakeFiles/project.dir/file_representation.cpp.o
+../bin/project: src/CMakeFiles/project.dir/tree.cpp.o
 ../bin/project: src/CMakeFiles/project.dir/build.make
 ../bin/project: src/CMakeFiles/project.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/c/Users/user/Desktop/proj/plus/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ../../bin/project"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/c/Users/user/Desktop/proj/plus/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable ../../bin/project"
 	cd /mnt/c/Users/user/Desktop/proj/plus/build/src && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/project.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

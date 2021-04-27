@@ -1,1 +1,1 @@
-/bin/x86_64-linux-gnu-g++-10 -g CMakeFiles/project.dir/main.cpp.o -o ../../bin/project  -lpthread 
+/bin/x86_64-linux-gnu-g++-10 -g CMakeFiles/project.dir/main.cpp.o CMakeFiles/project.dir/point.cpp.o CMakeFiles/project.dir/triangle.cpp.o CMakeFiles/project.dir/file_representation.cpp.o CMakeFiles/project.dir/tree.cpp.o -o ../../bin/project  -lpthread 

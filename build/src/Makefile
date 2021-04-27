@@ -144,6 +144,33 @@ project/fast:
 	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/build
 .PHONY : project/fast
 
+file_representation.o: file_representation.cpp.o
+
+.PHONY : file_representation.o
+
+# target to build an object file
+file_representation.cpp.o:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/file_representation.cpp.o
+.PHONY : file_representation.cpp.o
+
+file_representation.i: file_representation.cpp.i
+
+.PHONY : file_representation.i
+
+# target to preprocess a source file
+file_representation.cpp.i:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/file_representation.cpp.i
+.PHONY : file_representation.cpp.i
+
+file_representation.s: file_representation.cpp.s
+
+.PHONY : file_representation.s
+
+# target to generate assembly for a file
+file_representation.cpp.s:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/file_representation.cpp.s
+.PHONY : file_representation.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -171,6 +198,87 @@ main.cpp.s:
 	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+point.o: point.cpp.o
+
+.PHONY : point.o
+
+# target to build an object file
+point.cpp.o:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/point.cpp.o
+.PHONY : point.cpp.o
+
+point.i: point.cpp.i
+
+.PHONY : point.i
+
+# target to preprocess a source file
+point.cpp.i:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/point.cpp.i
+.PHONY : point.cpp.i
+
+point.s: point.cpp.s
+
+.PHONY : point.s
+
+# target to generate assembly for a file
+point.cpp.s:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/point.cpp.s
+.PHONY : point.cpp.s
+
+tree.o: tree.cpp.o
+
+.PHONY : tree.o
+
+# target to build an object file
+tree.cpp.o:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/tree.cpp.o
+.PHONY : tree.cpp.o
+
+tree.i: tree.cpp.i
+
+.PHONY : tree.i
+
+# target to preprocess a source file
+tree.cpp.i:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/tree.cpp.i
+.PHONY : tree.cpp.i
+
+tree.s: tree.cpp.s
+
+.PHONY : tree.s
+
+# target to generate assembly for a file
+tree.cpp.s:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/tree.cpp.s
+.PHONY : tree.cpp.s
+
+triangle.o: triangle.cpp.o
+
+.PHONY : triangle.o
+
+# target to build an object file
+triangle.cpp.o:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/triangle.cpp.o
+.PHONY : triangle.cpp.o
+
+triangle.i: triangle.cpp.i
+
+.PHONY : triangle.i
+
+# target to preprocess a source file
+triangle.cpp.i:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/triangle.cpp.i
+.PHONY : triangle.cpp.i
+
+triangle.s: triangle.cpp.s
+
+.PHONY : triangle.s
+
+# target to generate assembly for a file
+triangle.cpp.s:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/triangle.cpp.s
+.PHONY : triangle.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -180,9 +288,21 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... project"
+	@echo "... file_representation.o"
+	@echo "... file_representation.i"
+	@echo "... file_representation.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... point.o"
+	@echo "... point.i"
+	@echo "... point.s"
+	@echo "... tree.o"
+	@echo "... tree.i"
+	@echo "... tree.s"
+	@echo "... triangle.o"
+	@echo "... triangle.i"
+	@echo "... triangle.s"
 .PHONY : help
 
 
