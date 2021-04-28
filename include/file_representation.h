@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
 struct color
 {
@@ -11,4 +11,6 @@ struct color
 };
 
 const bool operator==(const color lhs, const color rhs);
+
+// takes 2d matrix and file to save
 void save_to_file(const std::vector<std::vector<color>> &image, const std::string &file);
