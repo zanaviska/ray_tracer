@@ -44,10 +44,11 @@ int main()
     std::vector<std::vector<color>> image(width, std::vector<color>(height, {0, 0, 0}));
 
     const point light = {5, 5, 5};
+    const point camera = {3, 10, 0};
     for (int64_t i = 0; i < width; i++)
         for (int64_t j = 0; j < height; j++)
         {
-            double res = tr.intersect({03, 10, 00}, {(2.0 * i - width) / width, 0, (j * 2.0 - height) / height}, light);
+            double res = tr.intersect(camera, {(2.0 * i - width) / width, 0, (j * 2.0 - height) / height}, light);
 
             if (res == -2) continue;
             unsigned char color = (std::fabs(res) + 0.5) / 1.5 * 255;
