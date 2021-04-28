@@ -15,7 +15,7 @@ void save_to_file(const std::vector<std::vector<color>> &image, const std::strin
     using namespace std;
     size_t width = image.size();
     size_t height = image[0].size();
-
+    // store header itself
     size_t filesize = 54 + 3 * width * height;
     std::array<unsigned char, 14> bmp_file_header = {'B', 'M', 0, 0, 0, 0, 0, 0, 0, 0, 54, 0, 0, 0};
     std::array<unsigned char, 40> bmp_info_header = {40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 24};
@@ -38,6 +38,7 @@ void save_to_file(const std::vector<std::vector<color>> &image, const std::strin
     std::copy(bmp_file_header.begin(), bmp_file_header.end(), ostream_iterator<unsigned char>(fout));
     std::copy(bmp_info_header.begin(), bmp_info_header.end(), ostream_iterator<unsigned char>(fout));
 
+    // stores pixels
     for (int j = 0; j < image[0].size(); j++)
     {
         for (int i = 0; i < image.size(); i++)

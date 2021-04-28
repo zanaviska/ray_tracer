@@ -20,7 +20,7 @@ std::pair<double, double> intersect(triangle trik, point start, point middle)
     point plane_normal = cross_product((trik[0] - trik[1]), (trik[2] - trik[1]));
     point ray_normal = middle - start;
 
-    // // does ray and plane intersect?
+    // does ray and plane intersect?
     double prod1 = dot_product(plane_normal, ray_normal);
     if (std::fabs(prod1) < eps) return {10000, -2};
 
@@ -163,18 +163,25 @@ std::optional<triangle> tree::intersect(node *now, point start, point middle)
     return right;
 }
 
+// return -2 if there is no intersect
 double tree::intersect(point start, point middle, point light)
 {
     auto root_ptr = root.get();
-    // std::cout << (size_t)(root_ptr) << '\n';
+    // insert into root
     auto trik = intersect(root_ptr, start, middle);
+    // if there is no intersect triangle return -2
     if (!trik.has_value()) return -2;
     auto res = ::intersect(trik.value(), start, middle);
     if (res.second == -2) return -2;
+    // get point intersect
     point inter = get_point_intersect(trik.value(), start, middle);
+    // get triangle where light will intersect out object
     auto shade = intersect(root_ptr, light, inter);
+    // if it will not intersect(the ray and triangle is parallel) or will intersect not in out point(so we are in shade)
+    // that return dark color
     if (!shade.has_value()) return 0;
     if (inter != get_point_intersect(shade.value(), light, inter)) return 0;
+    // otherwwise return sin of angle
     return ::intersect(shade.value(), light, inter).second;
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <ostream>
+#include <string>
 
 struct point
 {
@@ -10,8 +10,9 @@ struct point
     double z;
 };
 
-bool operator!=(const point lhs, const point rhs);
+// printing
 std::ostream &operator<<(std::ostream &out, point p);
+bool operator!=(const point lhs, const point rhs);
 point operator-(point lhs, point rhs);
 point operator+(point lhs, point rhs);
 point operator*(point lhs, double rhs);
