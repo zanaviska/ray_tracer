@@ -130,17 +130,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named project
+# Target rules for targets named ray_tracer
 
 # Build rule for target.
-project: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 project
-.PHONY : project
+ray_tracer: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ray_tracer
+.PHONY : ray_tracer
 
 # fast build rule for target.
-project/fast:
-	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/build
-.PHONY : project/fast
+ray_tracer/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/build
+.PHONY : ray_tracer/fast
 
 # Help Target
 help:
@@ -150,7 +150,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... project"
+	@echo "... ray_tracer"
 .PHONY : help
 
 

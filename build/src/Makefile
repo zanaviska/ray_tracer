@@ -130,19 +130,19 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-src/CMakeFiles/project.dir/rule:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/project.dir/rule
-.PHONY : src/CMakeFiles/project.dir/rule
+src/CMakeFiles/ray_tracer.dir/rule:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/ray_tracer.dir/rule
+.PHONY : src/CMakeFiles/ray_tracer.dir/rule
 
 # Convenience name for target.
-project: src/CMakeFiles/project.dir/rule
+ray_tracer: src/CMakeFiles/ray_tracer.dir/rule
 
-.PHONY : project
+.PHONY : ray_tracer
 
 # fast build rule for target.
-project/fast:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/build
-.PHONY : project/fast
+ray_tracer/fast:
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/build
+.PHONY : ray_tracer/fast
 
 file_representation.o: file_representation.cpp.o
 
@@ -150,7 +150,7 @@ file_representation.o: file_representation.cpp.o
 
 # target to build an object file
 file_representation.cpp.o:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/file_representation.cpp.o
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/file_representation.cpp.o
 .PHONY : file_representation.cpp.o
 
 file_representation.i: file_representation.cpp.i
@@ -159,7 +159,7 @@ file_representation.i: file_representation.cpp.i
 
 # target to preprocess a source file
 file_representation.cpp.i:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/file_representation.cpp.i
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/file_representation.cpp.i
 .PHONY : file_representation.cpp.i
 
 file_representation.s: file_representation.cpp.s
@@ -168,7 +168,7 @@ file_representation.s: file_representation.cpp.s
 
 # target to generate assembly for a file
 file_representation.cpp.s:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/file_representation.cpp.s
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/file_representation.cpp.s
 .PHONY : file_representation.cpp.s
 
 main.o: main.cpp.o
@@ -177,7 +177,7 @@ main.o: main.cpp.o
 
 # target to build an object file
 main.cpp.o:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/main.cpp.o
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -186,7 +186,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/main.cpp.i
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -195,7 +195,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/main.cpp.s
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 point.o: point.cpp.o
@@ -204,7 +204,7 @@ point.o: point.cpp.o
 
 # target to build an object file
 point.cpp.o:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/point.cpp.o
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/point.cpp.o
 .PHONY : point.cpp.o
 
 point.i: point.cpp.i
@@ -213,7 +213,7 @@ point.i: point.cpp.i
 
 # target to preprocess a source file
 point.cpp.i:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/point.cpp.i
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/point.cpp.i
 .PHONY : point.cpp.i
 
 point.s: point.cpp.s
@@ -222,7 +222,7 @@ point.s: point.cpp.s
 
 # target to generate assembly for a file
 point.cpp.s:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/point.cpp.s
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/point.cpp.s
 .PHONY : point.cpp.s
 
 tree.o: tree.cpp.o
@@ -231,7 +231,7 @@ tree.o: tree.cpp.o
 
 # target to build an object file
 tree.cpp.o:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/tree.cpp.o
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/tree.cpp.o
 .PHONY : tree.cpp.o
 
 tree.i: tree.cpp.i
@@ -240,7 +240,7 @@ tree.i: tree.cpp.i
 
 # target to preprocess a source file
 tree.cpp.i:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/tree.cpp.i
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/tree.cpp.i
 .PHONY : tree.cpp.i
 
 tree.s: tree.cpp.s
@@ -249,7 +249,7 @@ tree.s: tree.cpp.s
 
 # target to generate assembly for a file
 tree.cpp.s:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/tree.cpp.s
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/tree.cpp.s
 .PHONY : tree.cpp.s
 
 triangle.o: triangle.cpp.o
@@ -258,7 +258,7 @@ triangle.o: triangle.cpp.o
 
 # target to build an object file
 triangle.cpp.o:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/triangle.cpp.o
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/triangle.cpp.o
 .PHONY : triangle.cpp.o
 
 triangle.i: triangle.cpp.i
@@ -267,7 +267,7 @@ triangle.i: triangle.cpp.i
 
 # target to preprocess a source file
 triangle.cpp.i:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/triangle.cpp.i
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/triangle.cpp.i
 .PHONY : triangle.cpp.i
 
 triangle.s: triangle.cpp.s
@@ -276,7 +276,7 @@ triangle.s: triangle.cpp.s
 
 # target to generate assembly for a file
 triangle.cpp.s:
-	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/triangle.cpp.s
+	cd /mnt/c/Users/user/Desktop/proj/plus/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/triangle.cpp.s
 .PHONY : triangle.cpp.s
 
 # Help Target
@@ -287,7 +287,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... project"
+	@echo "... ray_tracer"
 	@echo "... file_representation.o"
 	@echo "... file_representation.i"
 	@echo "... file_representation.s"

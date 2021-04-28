@@ -90,7 +90,7 @@ clean: src/clean
 # Directory level rules for directory src
 
 # Recursive "all" directory target.
-src/all: src/CMakeFiles/project.dir/all
+src/all: src/CMakeFiles/ray_tracer.dir/all
 
 .PHONY : src/all
 
@@ -100,36 +100,36 @@ src/preinstall:
 .PHONY : src/preinstall
 
 # Recursive "clean" directory target.
-src/clean: src/CMakeFiles/project.dir/clean
+src/clean: src/CMakeFiles/ray_tracer.dir/clean
 
 .PHONY : src/clean
 
 #=============================================================================
-# Target rules for target src/CMakeFiles/project.dir
+# Target rules for target src/CMakeFiles/ray_tracer.dir
 
 # All Build rule for target.
-src/CMakeFiles/project.dir/all:
-	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/depend
-	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/user/Desktop/proj/plus/build/CMakeFiles --progress-num=1,2,3,4,5,6 "Built target project"
-.PHONY : src/CMakeFiles/project.dir/all
+src/CMakeFiles/ray_tracer.dir/all:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/depend
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/user/Desktop/proj/plus/build/CMakeFiles --progress-num=1,2,3,4,5,6 "Built target ray_tracer"
+.PHONY : src/CMakeFiles/ray_tracer.dir/all
 
 # Build rule for subdir invocation for target.
-src/CMakeFiles/project.dir/rule: cmake_check_build_system
+src/CMakeFiles/ray_tracer.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/user/Desktop/proj/plus/build/CMakeFiles 6
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/project.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/ray_tracer.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/user/Desktop/proj/plus/build/CMakeFiles 0
-.PHONY : src/CMakeFiles/project.dir/rule
+.PHONY : src/CMakeFiles/ray_tracer.dir/rule
 
 # Convenience name for target.
-project: src/CMakeFiles/project.dir/rule
+ray_tracer: src/CMakeFiles/ray_tracer.dir/rule
 
-.PHONY : project
+.PHONY : ray_tracer
 
 # clean rule for target.
-src/CMakeFiles/project.dir/clean:
-	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/project.dir/build.make src/CMakeFiles/project.dir/clean
-.PHONY : src/CMakeFiles/project.dir/clean
+src/CMakeFiles/ray_tracer.dir/clean:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/ray_tracer.dir/build.make src/CMakeFiles/ray_tracer.dir/clean
+.PHONY : src/CMakeFiles/ray_tracer.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.
