@@ -76,8 +76,8 @@ std::unique_ptr<tree::node> tree::insert(node *now, triangle new_elem)
     auto right = unite(now->right.get(), new_elem).second - unite(now->right.get(), new_elem).first;
 
     // take best child for insert
-    bool take_left = 1;
-    if (left.x * left.y * left.z < right.x * right.y * right.z) take_left = 0;
+    bool take_left = true;
+    if (left.x * left.y * left.z < right.x * right.y * right.z) take_left = false;
     if (std::fabs(left.x * left.y * left.z - right.x * right.y * right.z) < eps &&
         right.x + right.y + right.z < left.x + left.y + left.z)
         take_left = 0;
@@ -89,6 +89,7 @@ std::unique_ptr<tree::node> tree::insert(node *now, triangle new_elem)
 
     // if childs is balanced
     if (!new_child) return nullptr;
+    
     if (!now->right)
     {
         now->right = std::move(new_child);
