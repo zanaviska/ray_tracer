@@ -62,6 +62,40 @@ fn read_file(p: &Path) -> Vec<Triangle> {
     return shape;
 }
 
+/*
+float
+triangle_intersection(const vec3& orig,
+                      const vec3& dir,
+                      const vec3& v0,
+                      const vec3& v1,
+                      const vec3& v2) {
+    vec3 e1 = v1 - v0;
+    vec3 e2 = v2 - v0;
+    // Вычисление вектора нормали к плоскости
+    vec3 pvec = cross(dir, e2);
+    float det = dot(e1, pvec);
+
+    // Луч параллелен плоскости
+    if (det < 1e-8 && det > -1e-8) {
+        return 0;
+    }
+
+    float inv_det = 1 / det;
+    vec3 tvec = orig - v0;
+    float u = dot(tvec, pvec) * inv_det;
+    if (u < 0 || u > 1) {
+        return 0;
+    }
+
+    vec3 qvec = cross(tvec, e1);
+    float v = dot(dir, qvec) * inv_det;
+    if (v < 0 || u + v > 1) {
+        return 0;
+    }
+    return dot(e2, qvec) * inv_det;
+}
+*/
+
 fn main() {
     let shape = read_file(Path::new("cow1.obj"));
     println!("{:?}", shape);
