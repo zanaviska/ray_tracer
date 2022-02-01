@@ -1,5 +1,6 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use std::path::Path;
 
 use ray_tracer::Color;
 
@@ -12,15 +13,8 @@ struct Coor {
 
 type Triangle = [Coor; 3];
 
-fn main() {
-    let c = Color {
-        red: 15u8,
-        green: 24u8,
-        blue: 48u8,
-    };
-    println!("{:?}", c);
-
-    let f = File::open("cow.obj").expect("Unable to open file");
+fn read_file(p: &Path) -> Vec<Triangle> {
+    let f = File::open(p).expect("Unable to open file");
     let f = BufReader::new(f);
 
     let mut vertexes: Vec<Coor> = Vec::new();
@@ -30,6 +24,14 @@ fn main() {
         let line = line.expect("Unable to read line");
         let mut it = line.split(' ');
         match it.next() {
+            Some("v") => {
+                let coor = Coor {
+                    x: it.next().unwrap().parse::<f64>().unwrap(),
+                    y: it.next().unwrap().parse::<f64>().unwrap(),
+                    z: it.next().unwrap().parse::<f64>().unwrap(),
+                };
+                vertexes.push(coor);
+            }
             Some("f") => {
                 let c1 = vertexes[it
                     .next()
@@ -54,16 +56,13 @@ fn main() {
                     shape.push([c1, c2, c3]);
                 }
             }
-            Some("v") => {
-                let coor = Coor {
-                    x: it.next().unwrap().parse::<f64>().unwrap(),
-                    y: it.next().unwrap().parse::<f64>().unwrap(),
-                    z: it.next().unwrap().parse::<f64>().unwrap(),
-                };
-                vertexes.push(coor);
-            }
-            None => {}
-            Some(_) => {}
+            _ => {}
         }
     }
+    return shape;
+}
+
+fn main() {
+    let shape = read_file(Path::new("cow1.obj"));
+    println!("{:?}", shape);
 }
