@@ -1,23 +1,48 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use std::ops;
 use std::path::Path;
 
-use ray_tracer::Color;
+// use ray_tracer::Color;
 
 #[derive(Copy, Clone, Debug)]
-struct Coor {
-    x: f64,
-    y: f64,
-    z: f64,
+struct Vec3 {
+    x: f32,
+    y: f32,
+    z: f32,
 }
 
-type Triangle = [Coor; 3];
+impl ops::Sub<Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, _rhs: Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x - _rhs.x,
+            y: self.y - _rhs.y,
+            z: self.z - _rhs.z,
+        }
+    }
+}
+
+fn cross_product(lhs: Vec3, rhs: Vec3) -> Vec3 {
+    Vec3 {
+        x: lhs.y*rhs.z - lhs.z*rhs.y,
+        y: lhs.z*rhs.x - lhs.x*rhs.z,
+        z: lhs.x*rhs.y - lhs.y*rhs.x
+    }
+}
+
+fn dot_product(lhs: Vec3, rhs: Vec3) -> f32 {
+    lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z
+}
+
+type Triangle = [Vec3; 3];
 
 fn read_file(p: &Path) -> Vec<Triangle> {
     let f = File::open(p).expect("Unable to open file");
     let f = BufReader::new(f);
 
-    let mut vertexes: Vec<Coor> = Vec::new();
+    let mut vertexes: Vec<Vec3> = Vec::new();
     let mut shape: Vec<Triangle> = Vec::new();
 
     for line in f.lines() {
@@ -25,10 +50,10 @@ fn read_file(p: &Path) -> Vec<Triangle> {
         let mut it = line.split(' ');
         match it.next() {
             Some("v") => {
-                let coor = Coor {
-                    x: it.next().unwrap().parse::<f64>().unwrap(),
-                    y: it.next().unwrap().parse::<f64>().unwrap(),
-                    z: it.next().unwrap().parse::<f64>().unwrap(),
+                let coor = Vec3 {
+                    x: it.next().unwrap().parse::<f32>().unwrap(),
+                    y: it.next().unwrap().parse::<f32>().unwrap(),
+                    z: it.next().unwrap().parse::<f32>().unwrap(),
                 };
                 vertexes.push(coor);
             }
@@ -62,41 +87,63 @@ fn read_file(p: &Path) -> Vec<Triangle> {
     return shape;
 }
 
-/*
-float
-triangle_intersection(const vec3& orig,
-                      const vec3& dir,
-                      const vec3& v0,
-                      const vec3& v1,
-                      const vec3& v2) {
-    vec3 e1 = v1 - v0;
-    vec3 e2 = v2 - v0;
-    // Вычисление вектора нормали к плоскости
-    vec3 pvec = cross(dir, e2);
-    float det = dot(e1, pvec);
+// https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: Triangle) -> f32 {
+    let e1 = triangle[1] - triangle[0];
+    let e2 = triangle[2] - triangle[0];
 
-    // Луч параллелен плоскости
-    if (det < 1e-8 && det > -1e-8) {
-        return 0;
+    //get normal line
+    let pvec = cross_product(dir, e2);
+    let det = dot_product(e1, pvec);
+
+    //ray is parallel to the plane
+    if det < 1e-8 && det > -1e-8 {
+        return 0.;
     }
 
-    float inv_det = 1 / det;
-    vec3 tvec = orig - v0;
-    float u = dot(tvec, pvec) * inv_det;
-    if (u < 0 || u > 1) {
-        return 0;
+
+    let inv_det = 1. / det;
+    let tvec = orig - triangle[0];
+    let u = dot_product(tvec, pvec) * inv_det;
+    if u < 0. || u > 1. {
+        return 0.
     }
 
-    vec3 qvec = cross(tvec, e1);
-    float v = dot(dir, qvec) * inv_det;
-    if (v < 0 || u + v > 1) {
-        return 0;
+    let qvec = cross_product(tvec, e1);
+    let v = dot_product(dir, qvec) * inv_det;
+    if v < 0. || u + v > 1. {
+        return 0.
     }
-    return dot(e2, qvec) * inv_det;
+    
+    dot_product(e2, qvec) * inv_det
 }
-*/
 
 fn main() {
-    let shape = read_file(Path::new("cow1.obj"));
-    println!("{:?}", shape);
+    let shape = read_file(Path::new("cow.obj"));
+    // println!("{}", triangle_intersection(
+    //     Vec3 {
+    //         x: 2.,
+    //         y: 0.,
+    //         z: 0.,
+    //     },
+    //     Vec3 {
+    //         x: 1.,
+    //         y: 0.,
+    //         z: 0.,
+    //     },
+    //     shape[0],
+    // ));
+    let mut x = -0.5;
+    while x < 0.6 {
+        let mut y = -0.5;
+        while y < 0.6 {
+            let mut intersect = shape.clone().into_iter().fold(false, |acc, cur| acc | (triangle_intersection(Vec3{x: 2., y: 0., z: 0.}, Vec3{x, y, z: 0.}, cur) != 0.));
+            
+            print!("{}", if intersect {'c'} else {' '});
+
+            y += 0.1;
+        }
+        println!("");
+        x += 0.1;
+    }
 }
