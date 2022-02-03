@@ -1,8 +1,8 @@
 use std::fs::File;
+use std::io::prelude::*;
 use std::io::{BufRead, BufReader};
 use std::ops;
 use std::path::Path;
-
 // use ray_tracer::Color;
 
 #[derive(Copy, Clone, Debug)]
@@ -117,12 +117,68 @@ fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> f32 {
     dot_product(e2, qvec) * inv_det
 }
 
+fn write_to_file(image: Vec<Vec<Vec3>>) -> std::io::Result<()> {
+    let height = image.len();
+    let width = image.get(0).unwrap().len();
+
+    let filesize = 54 + 3*height*width;
+
+    let mut bmp_file_header: [u8; 14] = [0; 14];
+    bmp_file_header[0] = b'B';
+    bmp_file_header[1] = b'M';
+    bmp_file_header[2] = filesize as u8;
+    bmp_file_header[3] = (filesize >> 8) as u8;
+    bmp_file_header[4] = (filesize >> 16) as u8;
+    bmp_file_header[5] = (filesize >> 24) as u8;
+    bmp_file_header[10] = 54u8;
+
+    let mut bmp_info_header : [u8; 40] = [0; 40];
+    bmp_info_header[0] = 40u8;
+    bmp_info_header[12] = 1u8;
+    bmp_info_header[14] = 24u8;
+
+    bmp_info_header[4] = width as u8;
+    bmp_info_header[5] = (width >> 8) as u8;
+    bmp_info_header[6] = (width >> 16) as u8;
+    bmp_info_header[7] = (width >> 24) as u8;
+    bmp_info_header[8] = height as u8;
+    bmp_info_header[9] = (height >> 8) as u8;
+    bmp_info_header[10] = (height >> 16) as u8;
+    bmp_info_header[11] = (height >> 24) as u8;
+
+    let mut file = File::create("image.bmp")?;
+    file.write_all(&bmp_file_header)?;
+    file.write_all(&bmp_info_header)?;
+
+    let mut j = 0; 
+    while j < image[0].len() {
+        let mut i = 0;
+        while i < image.len() {
+            file.write_all(&[image[i][j].x as u8, image[i][j].y as u8, image[i][j].z as u8])?;
+            i+=1;
+        }
+
+        let mut i = 0;
+        while i < (4 - 3 * image.len() % 4) % 4 {
+            file.write_all(&[0u8])?;
+            i += 1;
+        }
+        j += 1;
+    }
+
+    Ok(())
+}
+
 fn main() {
     let shape = read_file(Path::new("cow.obj"));
+
+    let mut image: Vec<Vec<Vec3>> = Vec::new();
 
     let mut x = -0.5;
     while x < 0.6 {
         let mut y = -0.5;
+        image.push(Vec::new());
+        let mut line: Vec<Vec3> = Vec::new();
         while y < 0.6 {
             let intersect = shape.iter().fold(false, |acc, cur| {
                 acc | (triangle_intersection(
@@ -135,13 +191,15 @@ fn main() {
                     cur,
                 ) != 0.)
             });
-
+            line.push(Vec3{x: (intersect as i32 as f32)*255., y: 1.0, z: 0.0});
             // println!("{} {} {}", x, y, intersect);
             print!("{}", if intersect { 'c' } else { ' ' });
 
             y += 0.025;
         }
+        image.push(line);
         println!("");
         x += 0.025;
     }
+    let res = write_to_file(image);
 }
