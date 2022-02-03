@@ -177,7 +177,6 @@ fn main() {
     let mut x = -0.5;
     while x < 0.6 {
         let mut y = -0.5;
-        image.push(Vec::new());
         let mut line: Vec<Vec3> = Vec::new();
         while y < 0.6 {
             let intersect = shape.iter().fold(false, |acc, cur| {
@@ -193,13 +192,14 @@ fn main() {
             });
             line.push(Vec3{x: (intersect as i32 as f32)*255., y: 1.0, z: 0.0});
             // println!("{} {} {}", x, y, intersect);
-            print!("{}", if intersect { 'c' } else { ' ' });
-
+            // print!("{}", if intersect { 'c' } else { ' ' });
+            
             y += 0.025;
         }
+        // println!("{}", line.len());
         image.push(line);
-        println!("");
         x += 0.025;
     }
+    println!("{} {}", image.len(), image[0].len());
     let res = write_to_file(image);
 }
