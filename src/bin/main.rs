@@ -26,14 +26,14 @@ impl ops::Sub<Vec3> for Vec3 {
 
 fn cross_product(lhs: Vec3, rhs: Vec3) -> Vec3 {
     Vec3 {
-        x: lhs.y*rhs.z - lhs.z*rhs.y,
-        y: lhs.z*rhs.x - lhs.x*rhs.z,
-        z: lhs.x*rhs.y - lhs.y*rhs.x
+        x: lhs.y * rhs.z - lhs.z * rhs.y,
+        y: lhs.z * rhs.x - lhs.x * rhs.z,
+        z: lhs.x * rhs.y - lhs.y * rhs.x,
     }
 }
 
 fn dot_product(lhs: Vec3, rhs: Vec3) -> f32 {
-    lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z
+    lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
 }
 
 type Triangle = [Vec3; 3];
@@ -88,7 +88,7 @@ fn read_file(p: &Path) -> Vec<Triangle> {
 }
 
 // https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
-fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: Triangle) -> f32 {
+fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> f32 {
     let e1 = triangle[1] - triangle[0];
     let e2 = triangle[2] - triangle[0];
 
@@ -101,49 +101,47 @@ fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: Triangle) -> f32 {
         return 0.;
     }
 
-
     let inv_det = 1. / det;
     let tvec = orig - triangle[0];
     let u = dot_product(tvec, pvec) * inv_det;
     if u < 0. || u > 1. {
-        return 0.
+        return 0.;
     }
 
     let qvec = cross_product(tvec, e1);
     let v = dot_product(dir, qvec) * inv_det;
     if v < 0. || u + v > 1. {
-        return 0.
+        return 0.;
     }
-    
+
     dot_product(e2, qvec) * inv_det
 }
 
 fn main() {
     let shape = read_file(Path::new("cow.obj"));
-    // println!("{}", triangle_intersection(
-    //     Vec3 {
-    //         x: 2.,
-    //         y: 0.,
-    //         z: 0.,
-    //     },
-    //     Vec3 {
-    //         x: 1.,
-    //         y: 0.,
-    //         z: 0.,
-    //     },
-    //     shape[0],
-    // ));
+
     let mut x = -0.5;
     while x < 0.6 {
         let mut y = -0.5;
         while y < 0.6 {
-            let mut intersect = shape.clone().into_iter().fold(false, |acc, cur| acc | (triangle_intersection(Vec3{x: 2., y: 0., z: 0.}, Vec3{x, y, z: 0.}, cur) != 0.));
-            
-            print!("{}", if intersect {'c'} else {' '});
+            let intersect = shape.iter().fold(false, |acc, cur| {
+                acc | (triangle_intersection(
+                    Vec3 {
+                        x: 0.,
+                        y: 0.,
+                        z: 2.,
+                    },
+                    Vec3 { x, y, z: 1. },
+                    cur,
+                ) != 0.)
+            });
 
-            y += 0.1;
+            // println!("{} {} {}", x, y, intersect);
+            print!("{}", if intersect { 'c' } else { ' ' });
+
+            y += 0.025;
         }
         println!("");
-        x += 0.1;
+        x += 0.025;
     }
 }
