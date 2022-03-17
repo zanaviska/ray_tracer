@@ -7,6 +7,19 @@ pub struct Vec3 {
     pub z: f32,
 }
 
+impl Vec3 {
+    pub const MAX: Vec3 = Vec3 {
+        x: f32::MAX,
+        y: f32::MAX,
+        z: f32::MAX,
+    };
+    pub const MIN: Vec3 = Vec3 {
+        x: f32::MIN,
+        y: f32::MIN,
+        z: f32::MIN,
+    };
+}
+
 impl ops::Sub<Vec3> for Vec3 {
     type Output = Vec3;
 

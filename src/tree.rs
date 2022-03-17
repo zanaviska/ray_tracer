@@ -1,12 +1,14 @@
-use std::cmp;
+use crate::vec3::{max_coor, min_coor, Vec3};
+
+type Triangle = [Vec3; 3];
 
 pub struct Tree {
     root: Link,
 }
 
 struct Node {
-    min_value: i32,
-    max_value: i32,
+    min_value: Vec3,
+    max_value: Vec3,
     left: Tree,
     right: Tree,
 }
@@ -16,24 +18,27 @@ impl Node {
         let (min_left, max_left) = get_bouncies(&self.left);
         let (min_right, max_right) = get_bouncies(&self.right);
 
-        self.min_value = cmp::min(min_left, min_right);
-        self.max_value = cmp::max(max_left, max_right);
+        self.min_value = min_coor(min_left, min_right);
+        self.max_value = max_coor(max_left, max_right);
     }
 }
 
 enum Link {
     Empty,
-    Number(i32),
+    Triangle(Triangle),
     Node(Box<Node>),
 }
 
-fn get_bouncies(tree: &Tree) -> (i32, i32) {
+fn get_bouncies(tree: &Tree) -> (Vec3, Vec3) {
     match &tree.root {
         Link::Empty => {
-            return (i32::MAX, i32::MIN);
+            return (Vec3::MAX, Vec3::MIN);
         }
-        Link::Number(number) => {
-            return (*number, *number);
+        Link::Triangle(triangle) => {
+            return (
+                min_coor((*triangle)[2], min_coor((*triangle)[0], (*triangle)[1])),
+                max_coor((*triangle)[2], max_coor((*triangle)[0], (*triangle)[1])),
+            );
         }
         Link::Node(node) => {
             return (node.min_value, node.max_value);
@@ -41,14 +46,29 @@ fn get_bouncies(tree: &Tree) -> (i32, i32) {
     }
 }
 
-fn insert_value_into_tree_volume(new_value: i32, insert_tree: &Tree, other_tree: &Tree) -> f32 {
+fn vec_volume(vec: Vec3) -> f32 {
+    vec.x * vec.y * vec.z
+}
+
+fn insert_value_into_tree_volume(
+    new_value: Triangle,
+    insert_tree: &Tree,
+    other_tree: &Tree,
+) -> f32 {
     let (mut min_insert_tree, mut max_insert_tree) = get_bouncies(insert_tree);
     let (min_other_tree, max_other_tree) = get_bouncies(other_tree);
 
-    min_insert_tree = cmp::min(new_value, min_insert_tree);
-    max_insert_tree = cmp::max(new_value, max_insert_tree);
+    min_insert_tree = min_coor(
+        min_coor(new_value[0], min_insert_tree),
+        min_coor(new_value[1], new_value[2]),
+    );
+    max_insert_tree = max_coor(
+        max_coor(new_value[0], max_insert_tree),
+        max_coor(new_value[1], new_value[2]),
+    );
 
-    return ((max_insert_tree - min_insert_tree) + (max_other_tree - min_other_tree)) as f32;
+    return vec_volume(max_insert_tree - min_insert_tree)
+        + vec_volume(max_other_tree - min_other_tree);
 }
 
 fn combine_tree_volume(left: &Tree, right: &Tree, other: &Tree) -> f32 {
@@ -56,23 +76,23 @@ fn combine_tree_volume(left: &Tree, right: &Tree, other: &Tree) -> f32 {
     let (min_right, max_right) = get_bouncies(right);
     let (min_other, max_other) = get_bouncies(other);
 
-    return (cmp::max(max_left, max_right) - cmp::min(min_left, min_right) + max_other - min_other)
-        as f32;
+    return vec_volume(max_coor(max_left, max_right) - min_coor(min_left, min_right))
+        + vec_volume(max_other - min_other);
 }
 
 impl Tree {
     pub fn new() -> Tree {
         Tree { root: Link::Empty }
     }
-    fn private_insert(&mut self, arg: i32) -> Tree {
+    fn private_insert(&mut self, arg: &Triangle) -> Tree {
         match &mut self.root {
             Link::Empty => {
-                self.root = Link::Number(arg);
+                self.root = Link::Triangle(*arg);
                 return Tree::new();
             }
-            Link::Number(_number) => {
+            Link::Triangle(_triabgle) => {
                 let mut new_tree = Tree::new();
-                new_tree.root = Link::Number(arg);
+                new_tree.root = Link::Triangle(*arg);
                 return new_tree;
             }
             Link::Node(node) => {
@@ -80,15 +100,15 @@ impl Tree {
                 if let Link::Empty = node.right.root {
                     node.right = node.left.private_insert(arg);
                     let (potential_min, potential_max) = get_bouncies(&node.right);
-                    node.min_value = cmp::min(potential_min, node.min_value);
-                    node.max_value = cmp::max(potential_max, node.max_value);
+                    node.min_value = min_coor(potential_min, node.min_value);
+                    node.max_value = max_coor(potential_max, node.max_value);
 
                     return Tree::new();
                 }
 
                 //find best child
-                let mut new_child = if insert_value_into_tree_volume(arg, &node.left, &node.right)
-                    < insert_value_into_tree_volume(arg, &node.right, &node.left)
+                let mut new_child = if insert_value_into_tree_volume(*arg, &node.left, &node.right)
+                    < insert_value_into_tree_volume(*arg, &node.right, &node.left)
                 {
                     node.left.private_insert(arg)
                 } else {
@@ -129,7 +149,7 @@ impl Tree {
             }
         }
     }
-    pub fn insert(&mut self, arg: i32) {
+    pub fn insert(&mut self, arg: &Triangle) {
         let new_child = self.private_insert(arg);
         match &new_child.root {
             Link::Empty => {
@@ -141,8 +161,8 @@ impl Tree {
         let (min_old_value, max_old_value) = get_bouncies(&self);
         let (min_new_value, max_new_value) = get_bouncies(&new_child);
         let new_root = Link::Node(Box::new(Node {
-            min_value: cmp::min(min_old_value, min_new_value),
-            max_value: cmp::max(max_old_value, max_new_value),
+            min_value: min_coor(min_old_value, min_new_value),
+            max_value: max_coor(max_old_value, max_new_value),
             left: std::mem::replace(self, Tree::new()),
             right: new_child,
         }));
@@ -158,9 +178,9 @@ impl Tree {
         }
         match &self.root {
             Link::Empty => println!("Empty"),
-            Link::Number(number) => println!("{}", number),
+            Link::Triangle(triangle) => println!("{:?}", triangle),
             Link::Node(node) => {
-                println!("[{} {}]", node.min_value, node.max_value);
+                println!("[{:?} {:?}]", node.min_value, node.max_value);
                 node.left.print(Some(offset + 1));
                 node.right.print(Some(offset + 1));
             }

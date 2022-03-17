@@ -53,31 +53,18 @@ fn get_image_part(
 }
 
 fn main() {
-    let mut tr = Tree::new();
-    tr.print(None);
-    println!();
-    tr.insert(5);
-    tr.print(None);
-    println!();
-    tr.insert(6);
-    tr.print(None);
-    println!();
-    tr.insert(7);
-    tr.print(None);
-    println!();
-    tr.insert(1);
-    tr.print(None);
-    println!();
-    tr.insert(3);
-    tr.print(None);
-    println!();
-    tr.insert(15);
-    tr.print(None);
-    println!();
-
     use std::time::Instant;
     let now = Instant::now();
     let shape = read_file(Path::new("cow1.obj"));
+
+    let mut tr = Tree::new();
+    tr.print(None);
+
+    for i in &shape {
+        tr.insert(i);
+        tr.print(None);
+        println!();
+    }
 
     let height = 720;
     let width = 720;
