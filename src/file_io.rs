@@ -1,64 +1,13 @@
-use std::cmp;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{BufRead, BufReader};
-use std::mem;
-use std::ops;
 use std::path::Path;
-use std::sync::Arc;
-use std::thread;
-// use ray_tracer::Color;
 
-#[derive(Copy, Clone, Debug)]
-struct Vec3 {
-    x: f32,
-    y: f32,
-    z: f32,
-}
-
-impl ops::Sub<Vec3> for Vec3 {
-    type Output = Vec3;
-
-    fn sub(self, _rhs: Vec3) -> Vec3 {
-        Vec3 {
-            x: self.x - _rhs.x,
-            y: self.y - _rhs.y,
-            z: self.z - _rhs.z,
-        }
-    }
-}
-
-fn cross_product(lhs: Vec3, rhs: Vec3) -> Vec3 {
-    Vec3 {
-        x: lhs.y * rhs.z - lhs.z * rhs.y,
-        y: lhs.z * rhs.x - lhs.x * rhs.z,
-        z: lhs.x * rhs.y - lhs.y * rhs.x,
-    }
-}
-
-fn dot_product(lhs: Vec3, rhs: Vec3) -> f32 {
-    lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
-}
-
-fn min_coor(lhs: Vec3, rhs: Vec3) -> Vec3 {
-    Vec3 {
-        x: lhs.x.min(rhs.x),
-        y: lhs.y.min(rhs.y),
-        z: lhs.z.min(rhs.z),
-    }
-}
-
-fn max_coor(lhs: Vec3, rhs: Vec3) -> Vec3 {
-    Vec3 {
-        x: lhs.x.max(rhs.x),
-        y: lhs.y.max(rhs.y),
-        z: lhs.z.max(rhs.z),
-    }
-}
+pub use crate::vec3::{cross_product, dot_product, Vec3};
 
 type Triangle = [Vec3; 3];
 
-fn read_file(p: &Path) -> Vec<Triangle> {
+pub fn read_file(p: &Path) -> Vec<Triangle> {
     let f = File::open(p).expect("Unable to open file");
     let f = BufReader::new(f);
 
@@ -108,7 +57,7 @@ fn read_file(p: &Path) -> Vec<Triangle> {
 }
 
 // https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
-fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> f32 {
+pub fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> f32 {
     let e1 = triangle[1] - triangle[0];
     let e2 = triangle[2] - triangle[0];
 
@@ -137,7 +86,7 @@ fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> f32 {
     dot_product(e2, qvec) * inv_det
 }
 
-fn write_to_file(image: Vec<Vec<Vec3>>) -> std::io::Result<()> {
+pub fn write_to_file(image: Vec<Vec<Vec3>>) -> std::io::Result<()> {
     let height = image.len();
     let width = image[0].len();
 
@@ -180,88 +129,4 @@ fn write_to_file(image: Vec<Vec<Vec3>>) -> std::io::Result<()> {
     }
 
     Ok(())
-}
-
-
-
-fn get_image_part(
-    x_min: f32,
-    x_max: f32,
-    y_min: f32,
-    y_max: f32,
-    height: i32,
-    width: i32,
-    shape: &Vec<[Vec3; 3]>,
-) -> Vec<Vec<Vec3>> {
-    let mut image: Vec<Vec<Vec3>> = Vec::new();
-    let mut x = x_min;
-
-    while x < x_max {
-        let mut y = y_min;
-        let mut line: Vec<Vec3> = Vec::new();
-        while y < y_max {
-            let intersect = shape.iter().fold(false, |acc, cur| {
-                acc | (triangle_intersection(
-                    Vec3 {
-                        x: 0.,
-                        y: 0.,
-                        z: 2.,
-                    },
-                    Vec3 { x, y, z: 1. },
-                    cur,
-                ) != 0.)
-            });
-            line.push(Vec3 {
-                x: (intersect as i32 as f32) * 255.,
-                y: 1.0,
-                z: 0.0,
-            });
-
-            y += 1.0 / width as f32;
-        }
-        image.push(line);
-        x += 1.0 / height as f32;
-    }
-
-    return image;
-}
-
-fn main() {
-
-    let shape = read_file(Path::new("cow.obj")); 
-    use std::time::Instant;
-    let now = Instant::now();
-
-    let height = 720;
-    let width = 720;
-
-    const THREAD_COUNT: usize = 11;
-
-    let x_min = -0.5;
-    let x_max = 0.5;
-    let y_min = -0.5;
-    let y_max = 0.5;
-
-    let shape_arc = Arc::new(shape);
-    let threads: Vec<std::thread::JoinHandle<Vec<Vec<Vec3>>>> = (0..THREAD_COUNT)
-        .into_iter()
-        .map(|idx| {
-            let shape_counter = Arc::clone(&shape_arc);
-            thread::spawn(move || {
-                let x_diff = (x_max - x_min) / THREAD_COUNT as f32;
-                let image = get_image_part(x_min + x_diff*idx as f32, x_min + x_diff*(idx as f32 + 1.), y_min, y_max, height, width, &*shape_counter);
-                return image;
-            })
-        })
-        .collect();
-
-    let image = threads.into_iter().fold(Vec::<Vec<Vec3>>::new(), |mut acc, cur| {
-        let current = cur.join().unwrap();
-        acc.splice(acc.len().., current.into_iter());
-        return acc;
-    });
-
-    let _res = write_to_file(image);
-    let elapsed = now.elapsed();
-    println!("Elapsed: {:.2?}", elapsed);
 }
