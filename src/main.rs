@@ -4,9 +4,11 @@ use std::thread;
 
 pub mod file_io;
 pub mod vec3;
+pub mod tree;
 
 use file_io::{triangle_intersection, write_to_file, read_file};
 use vec3::Vec3;
+use tree::Tree;
 
 fn get_image_part(
     x_min: f32,
@@ -51,9 +53,20 @@ fn get_image_part(
 }
 
 fn main() {
+    let mut tr = Tree::new();
+    tr.print(None);
+    tr.insert(5);
+    tr.print(None);
+    tr.insert(6);
+    tr.print(None);
+    tr.insert(7);
+    tr.print(None);
+    tr.insert(1);
+    tr.print(None);
+
     use std::time::Instant;
     let now = Instant::now();
-    let shape = read_file(Path::new("cow.obj"));
+    let shape = read_file(Path::new("cow1.obj"));
 
     let height = 720;
     let width = 720;
