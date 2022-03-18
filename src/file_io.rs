@@ -3,7 +3,7 @@ use std::io::prelude::*;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
-pub use crate::vec3::{cross_product, dot_product, Vec3};
+pub use crate::vec3::Vec3;
 
 type Triangle = [Vec3; 3];
 
@@ -54,36 +54,6 @@ pub fn read_file(p: &Path) -> Vec<Triangle> {
         }
     }
     return shape;
-}
-
-// https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
-pub fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> f32 {
-    let e1 = triangle[1] - triangle[0];
-    let e2 = triangle[2] - triangle[0];
-
-    //get normal line
-    let pvec = cross_product(dir, e2);
-    let det = dot_product(e1, pvec);
-
-    //ray is parallel to the plane
-    if det < 1e-8 && det > -1e-8 {
-        return 0.;
-    }
-
-    let inv_det = 1. / det;
-    let tvec = orig - triangle[0];
-    let u = dot_product(tvec, pvec) * inv_det;
-    if u < 0. || u > 1. {
-        return 0.;
-    }
-
-    let qvec = cross_product(tvec, e1);
-    let v = dot_product(dir, qvec) * inv_det;
-    if v < 0. || u + v > 1. {
-        return 0.;
-    }
-
-    dot_product(e2, qvec) * inv_det
 }
 
 pub fn write_to_file(image: Vec<Vec<Vec3>>) -> std::io::Result<()> {

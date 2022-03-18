@@ -1,4 +1,4 @@
-use crate::vec3::{max_coor, min_coor, Vec3};
+use crate::vec3::{cross_product, dot_product, max_coor, min_coor, Vec3};
 
 type Triangle = [Vec3; 3];
 
@@ -80,9 +80,253 @@ fn combine_tree_volume(left: &Tree, right: &Tree, other: &Tree) -> f32 {
         + vec_volume(max_other - min_other);
 }
 
+// https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> f32 {
+    let e1 = triangle[1] - triangle[0];
+    let e2 = triangle[2] - triangle[0];
+
+    //get normal line
+    let pvec = cross_product(dir, e2);
+    let det = dot_product(e1, pvec);
+
+    //ray is parallel to the plane
+    if det < 1e-8 && det > -1e-8 {
+        return 0.;
+    }
+
+    let inv_det = 1. / det;
+    let tvec = orig - triangle[0];
+    let u = dot_product(tvec, pvec) * inv_det;
+    if u < 0. || u > 1. {
+        return 0.;
+    }
+
+    let qvec = cross_product(tvec, e1);
+    let v = dot_product(dir, qvec) * inv_det;
+    if v < 0. || u + v > 1. {
+        return 0.;
+    }
+
+    dot_product(e2, qvec) * inv_det
+}
+
+fn ray_square_intersect(source: Vec3, direction: Vec3, vertexes: [Vec3; 4]) -> bool {
+    return triangle_intersection(source, direction, &[vertexes[1], vertexes[2], vertexes[0]])
+        != 0.
+        || triangle_intersection(source, direction, &[vertexes[1], vertexes[2], vertexes[3]])
+            != 0.;
+}
+
+fn ray_cube_intersect(source: Vec3, direction: Vec3, min_vertex: Vec3, max_vertex: Vec3) -> bool {
+    let mut result = ray_square_intersect(
+        source,
+        direction,
+        [
+            Vec3 {
+                x: min_vertex.x,
+                y: min_vertex.y,
+                z: min_vertex.z,
+            },
+            Vec3 {
+                x: max_vertex.x,
+                y: min_vertex.y,
+                z: min_vertex.z,
+            },
+            Vec3 {
+                x: max_vertex.x,
+                y: max_vertex.y,
+                z: min_vertex.z,
+            },
+            Vec3 {
+                x: min_vertex.x,
+                y: max_vertex.y,
+                z: min_vertex.z,
+            },
+        ],
+    );
+    result |= ray_square_intersect(
+        source,
+        direction,
+        [
+            Vec3 {
+                x: min_vertex.x,
+                y: min_vertex.y,
+                z: min_vertex.z,
+            },
+            Vec3 {
+                x: min_vertex.x,
+                y: max_vertex.y,
+                z: min_vertex.z,
+            },
+            Vec3 {
+                x: max_vertex.x,
+                y: max_vertex.y,
+                z: min_vertex.z,
+            },
+            Vec3 {
+                x: max_vertex.x,
+                y: min_vertex.y,
+                z: min_vertex.z,
+            },
+        ],
+    );
+    result |= ray_square_intersect(
+        source,
+        direction,
+        [
+            Vec3 {
+                x: min_vertex.x,
+                y: min_vertex.y,
+                z: min_vertex.z,
+            },
+            Vec3 {
+                x: min_vertex.x,
+                y: min_vertex.y,
+                z: max_vertex.z,
+            },
+            Vec3 {
+                x: max_vertex.x,
+                y: min_vertex.y,
+                z: max_vertex.z,
+            },
+            Vec3 {
+                x: max_vertex.x,
+                y: min_vertex.y,
+                z: min_vertex.z,
+            },
+        ],
+    );
+    result |= ray_square_intersect(
+        source,
+        direction,
+        [
+            Vec3 {
+                x: max_vertex.x,
+                y: max_vertex.y,
+                z: max_vertex.z,
+            },
+            Vec3 {
+                x: max_vertex.x,
+                y: min_vertex.y,
+                z: max_vertex.z,
+            },
+            Vec3 {
+                x: max_vertex.x,
+                y: min_vertex.y,
+                z: min_vertex.z,
+            },
+            Vec3 {
+                x: max_vertex.x,
+                y: max_vertex.y,
+                z: min_vertex.z,
+            },
+        ],
+    );
+    result |= ray_square_intersect(
+        source,
+        direction,
+        [
+            Vec3 {
+                x: max_vertex.x,
+                y: max_vertex.y,
+                z: max_vertex.z,
+            },
+            Vec3 {
+                x: max_vertex.x,
+                y: min_vertex.y,
+                z: max_vertex.z,
+            },
+            Vec3 {
+                x: min_vertex.x,
+                y: min_vertex.y,
+                z: max_vertex.z,
+            },
+            Vec3 {
+                x: min_vertex.x,
+                y: max_vertex.y,
+                z: max_vertex.z,
+            },
+        ],
+    );
+    result |= ray_square_intersect(
+        source,
+        direction,
+        [
+            Vec3 {
+                x: max_vertex.x,
+                y: max_vertex.y,
+                z: max_vertex.z,
+            },
+            Vec3 {
+                x: max_vertex.x,
+                y: max_vertex.y,
+                z: min_vertex.z,
+            },
+            Vec3 {
+                x: min_vertex.x,
+                y: max_vertex.y,
+                z: min_vertex.z,
+            },
+            Vec3 {
+                x: min_vertex.x,
+                y: max_vertex.y,
+                z: max_vertex.z,
+            },
+        ],
+    );
+    return result;
+}
+
 impl Tree {
     pub fn new() -> Tree {
         Tree { root: Link::Empty }
+    }
+    pub fn accumulate(&self, elements: &mut Vec<Triangle>, min: Vec3, max: Vec3) {
+        match &self.root {
+            Link::Empty => {}
+            Link::Triangle(triangle) => {
+                if !(min <= triangle[0]
+                    || triangle[0] <= max
+                    || min <= triangle[1]
+                    || triangle[1] <= max
+                    || min <= triangle[2]
+                    || triangle[2] <= max)
+                {
+                    println!("Error {:?} {:?} {:?}", min, triangle, max);
+                }
+                elements.push(*triangle);
+            }
+            Link::Node(node) => {
+                node.left.accumulate(
+                    elements,
+                    min_coor(min, node.min_value),
+                    max_coor(min, node.max_value),
+                );
+                node.right.accumulate(
+                    elements,
+                    min_coor(min, node.min_value),
+                    max_coor(min, node.max_value),
+                );
+            }
+        }
+    }
+    pub fn does_intersect(&self, source: Vec3, direction: Vec3) -> bool {
+        match &self.root {
+            Link::Empty => {
+                return false;
+            }
+            Link::Triangle(triangle) => {
+                return triangle_intersection(source, direction, triangle) != 0.;
+            }
+            Link::Node(node) => {
+                // println!("{:?}\n{:?}\n", node.min_value, node.max_value);
+                if ray_cube_intersect(source, direction, node.min_value, node.max_value) {
+                    return node.left.does_intersect(source, direction)
+                        || node.right.does_intersect(source, direction);
+                }
+            }
+        }
+        return false;
     }
     fn private_insert(&mut self, arg: &Triangle) -> Tree {
         match &mut self.root {
@@ -100,9 +344,9 @@ impl Tree {
                 if let Link::Empty = node.right.root {
                     node.right = node.left.private_insert(arg);
                     let (potential_min, potential_max) = get_bouncies(&node.right);
-                    node.min_value = min_coor(potential_min, node.min_value);
-                    node.max_value = max_coor(potential_max, node.max_value);
-
+                    // node.min_value = min_coor(potential_min, node.min_value);
+                    // node.max_value = max_coor(potential_max, node.max_value);
+                    node.update_bounces();
                     return Tree::new();
                 }
 

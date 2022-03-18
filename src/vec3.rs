@@ -32,6 +32,33 @@ impl ops::Sub<Vec3> for Vec3 {
     }
 }
 
+impl PartialOrd for Vec3 {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        if self.x.lt(&other.x) {
+            return Some(std::cmp::Ordering::Less);
+        }
+        if self.x.eq(&other.x) && self.y.lt(&other.y) {
+            return Some(std::cmp::Ordering::Less);
+        }
+        if self.x.eq(&other.x) && self.y.eq(&other.y) && self.z.lt(&other.z) {
+            return Some(std::cmp::Ordering::Less);
+        }
+        if self.x.eq(&other.x) && self.y.eq(&other.y) && self.z.eq(&other.z) {
+            return Some(std::cmp::Ordering::Equal);
+        }
+        return Some(std::cmp::Ordering::Greater);
+    }
+    fn le(&self, other: &Self) -> bool {
+        self.partial_cmp(other) != Some(std::cmp::Ordering::Greater)
+    }
+}
+
+impl PartialEq for Vec3 {
+    fn eq(&self, other: &Self) -> bool {
+        self.x.eq(&other.x) && self.y.eq(&other.y) && self.z.eq(&other.z)
+    }
+}
+
 pub fn cross_product(lhs: Vec3, rhs: Vec3) -> Vec3 {
     Vec3 {
         x: lhs.y * rhs.z - lhs.z * rhs.y,

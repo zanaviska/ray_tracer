@@ -7,15 +7,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'main'",
+            "name": "Debug executable 'ray_tracer'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=main",
+                    "--bin=ray_tracer",
                     "--package=ray_tracer"
                 ],
                 "filter": {
-                    "name": "main",
+                    "name": "ray_tracer",
                     "kind": "bin"
                 }
             },
@@ -25,16 +25,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'main'",
+            "name": "Debug unit tests in executable 'ray_tracer'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=main",
+                    "--bin=ray_tracer",
                     "--package=ray_tracer"
                 ],
                 "filter": {
-                    "name": "main",
+                    "name": "ray_tracer",
                     "kind": "bin"
                 }
             },
