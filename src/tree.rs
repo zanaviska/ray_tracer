@@ -111,9 +111,9 @@ fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> f32 {
 }
 
 fn ray_square_intersect(source: Vec3, direction: Vec3, vertexes: [Vec3; 4]) -> bool {
-    return triangle_intersection(source, direction, &[vertexes[1], vertexes[2], vertexes[0]])
+    return triangle_intersection(source, direction, &[vertexes[2], vertexes[0], vertexes[1]])
         != 0.
-        || triangle_intersection(source, direction, &[vertexes[1], vertexes[2], vertexes[3]])
+        || triangle_intersection(source, direction, &[vertexes[2], vertexes[0], vertexes[3]])
             != 0.;
 }
 
@@ -274,6 +274,7 @@ fn ray_cube_intersect(source: Vec3, direction: Vec3, min_vertex: Vec3, max_verte
             },
         ],
     );
+
     return result;
 }
 
@@ -343,9 +344,7 @@ impl Tree {
                 //if there is no right son, I insert ret value of inserting in left there
                 if let Link::Empty = node.right.root {
                     node.right = node.left.private_insert(arg);
-                    let (potential_min, potential_max) = get_bouncies(&node.right);
-                    // node.min_value = min_coor(potential_min, node.min_value);
-                    // node.max_value = max_coor(potential_max, node.max_value);
+
                     node.update_bounces();
                     return Tree::new();
                 }

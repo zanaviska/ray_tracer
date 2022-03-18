@@ -59,28 +59,12 @@ fn main() {
 
     for i in &shape {
         tr.insert(i);
-        // tr.print(None);
-        // println!();
     }
 
-    let height = 1080;
-    let width = 1920;
+    let height = 1920;
+    let width = 1080;
 
     const THREAD_COUNT: usize = 11;
-    // let intersect = tr.does_intersect(
-    //     Vec3 {
-    //         x: 0.,
-    //         y: 0.,
-    //         z: 2.,
-    //     },
-    //     Vec3 {
-    //         x: -0.1,
-    //         y: 0.05,
-    //         z: 1.,
-    //     },
-    // );
-    // println!("{:?}", intersect);
-    // (-0.1, 0.05)
 
     let x_min = -0.5;
     let x_max = 0.5;
