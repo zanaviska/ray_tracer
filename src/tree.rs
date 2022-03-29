@@ -117,7 +117,19 @@ fn ray_square_intersect(source: Vec3, direction: Vec3, vertexes: [Vec3; 4]) -> b
             != 0.;
 }
 
-fn ray_cube_intersect(source: Vec3, direction: Vec3, min_vertex: Vec3, max_vertex: Vec3) -> bool {
+/*
+( 0.0, 0.0, 2.0 )
+( 0.22727275, -0.03333487, 1.0 )
+( 0.184701, -0.0625733, 0.141112 )
+( 0.45416, 0.06693, 0.295318 )
+*/
+
+fn ray_cube_intersect_triangle(
+    source: Vec3,
+    direction: Vec3,
+    min_vertex: Vec3,
+    max_vertex: Vec3,
+) -> bool {
     let mut result = ray_square_intersect(
         source,
         direction,
@@ -278,56 +290,155 @@ fn ray_cube_intersect(source: Vec3, direction: Vec3, min_vertex: Vec3, max_verte
     return result;
 }
 
+fn ray_cube_intersect_ray_time(
+    source: Vec3,
+    direction: Vec3,
+    min_vertex: Vec3,
+    max_vertex: Vec3,
+) -> bool {
+    let mut t_min = f32::MIN;
+    let mut t_max = f32::MAX;
+
+    let mut update_axis_result = |direction: f32, source: f32, min_vertex: f32, max_vertex: f32| {
+        let dir = direction - source;
+        if dir != 0. {
+            let tx1 = (min_vertex - source) / dir;
+            let tx2 = (max_vertex - source) / dir;
+
+            t_min = t_min.max(tx1.min(tx2));
+            t_max = t_max.min(tx1.max(tx2));
+        }
+    };
+
+    update_axis_result(direction.x, source.x, min_vertex.x, max_vertex.x);
+    update_axis_result(direction.y, source.y, min_vertex.y, max_vertex.y);
+    update_axis_result(direction.z, source.z, min_vertex.z, max_vertex.z);
+    return t_min <= t_max && 0. <= t_max;
+}
+
+fn ray_cube_intersect_cpp_version(
+    source: Vec3,
+    direction: Vec3,
+    min_vertex: Vec3,
+    max_vertex: Vec3,
+) -> bool {
+    let d = Vec3 {
+        x: direction.x - source.x,
+        y: direction.y - source.y,
+        z: direction.z - source.z,
+    };
+
+    let update_projection_result = |source: f32,
+                                    min_main: f32,
+                                    d_main: f32,
+                                    d_rest: f32,
+                                    source_rest: f32,
+                                    min_rest: f32,
+                                    max_rest: f32|
+     -> bool {
+        let mid = (min_main - source) / d_main * d_rest + source_rest;
+        return min_rest <= mid && mid <= max_rest;
+    };
+
+    macro_rules! update_projection_result {
+        ( $main:ident, $rest:ident ) => {
+            update_projection_result(
+                source.$main,
+                min_vertex.$main,
+                d.$main,
+                d.$rest,
+                source.$rest,
+                min_vertex.$rest,
+                max_vertex.$rest,
+            )
+        };
+    }
+
+    if update_projection_result! {x, y} && update_projection_result! {x, z} {
+        return true;
+    }
+    if update_projection_result! {y, x} && update_projection_result! {y, z} {
+        return true;
+    }
+    if update_projection_result! {z, y} && update_projection_result! {z, x} {
+        return true;
+    }
+
+    return false;
+}
+
+//  (0.0, 0.0,  2.0  )
+//  (0.1, 0.1,  1.0  )
+//  (0.494932, 0.0233132,  0.163541)
+//  (0.50907, 0.029493,  0.178999 )
+
+//TODO create better solution for intersection ray and cube
+fn ray_cube_intersect(source: Vec3, direction: Vec3, min_vertex: Vec3, max_vertex: Vec3) -> bool {
+    let triangle_version = ray_cube_intersect_triangle(source, direction, min_vertex, max_vertex);
+    let ray_time = ray_cube_intersect_ray_time(source, direction, min_vertex, max_vertex);
+    let cpp_version = ray_cube_intersect_cpp_version(source, direction, min_vertex, max_vertex);
+
+    // if working != debug {
+    //     println!(
+    //         "working: {}, debug: {}\n{:?} {:?} {:?} {:?}",
+    //         working, debug, source, direction, min_vertex, max_vertex
+    //     );
+    //     // panic!();
+    // }
+    return ray_time;
+}
+
 impl Tree {
     pub fn new() -> Tree {
         Tree { root: Link::Empty }
     }
-    pub fn accumulate(&self, elements: &mut Vec<Triangle>, min: Vec3, max: Vec3) {
-        match &self.root {
-            Link::Empty => {}
-            Link::Triangle(triangle) => {
-                if !(min <= triangle[0]
-                    || triangle[0] <= max
-                    || min <= triangle[1]
-                    || triangle[1] <= max
-                    || min <= triangle[2]
-                    || triangle[2] <= max)
-                {
-                    println!("Error {:?} {:?} {:?}", min, triangle, max);
+    pub fn func(&self) {
+        println!(
+            "constructor {:?}",
+            ray_cube_intersect(
+                Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 2.0
+                },
+                Vec3 {
+                    x: 0.22727275,
+                    y: -0.03333487,
+                    z: 1.0
+                },
+                Vec3 {
+                    x: 0.184701,
+                    y: -0.0625733,
+                    z: 0.141112
+                },
+                Vec3 {
+                    x: 0.45416,
+                    y: 0.06693,
+                    z: 0.295318
                 }
-                elements.push(*triangle);
-            }
-            Link::Node(node) => {
-                node.left.accumulate(
-                    elements,
-                    min_coor(min, node.min_value),
-                    max_coor(min, node.max_value),
-                );
-                node.right.accumulate(
-                    elements,
-                    min_coor(min, node.min_value),
-                    max_coor(min, node.max_value),
-                );
-            }
-        }
+            )
+        );
     }
-    pub fn does_intersect(&self, source: Vec3, direction: Vec3) -> bool {
+    pub fn does_intersect(&self, source: Vec3, direction: Vec3) -> f32 {
         match &self.root {
             Link::Empty => {
-                return false;
+                return 0.;
             }
             Link::Triangle(triangle) => {
-                return triangle_intersection(source, direction, triangle) != 0.;
+                return triangle_intersection(source, direction, triangle);
             }
             Link::Node(node) => {
-                // println!("{:?}\n{:?}\n", node.min_value, node.max_value);
+                // println!("{:?} {:?}", node.min_value, node.max_value);
                 if ray_cube_intersect(source, direction, node.min_value, node.max_value) {
-                    return node.left.does_intersect(source, direction)
-                        || node.right.does_intersect(source, direction);
+                    let left_child_res = node.left.does_intersect(source, direction);
+                    if left_child_res != 0. {
+                        return left_child_res;
+                    }
+                    return node.right.does_intersect(source, direction);
                 }
+                return 0.;
             }
         }
-        return false;
     }
     fn private_insert(&mut self, arg: &Triangle) -> Tree {
         match &mut self.root {
@@ -358,6 +469,7 @@ impl Tree {
                     node.right.private_insert(arg)
                 };
 
+                // if we have no new child, update our ranges end finish
                 match &new_child.root {
                     Link::Empty => {
                         node.update_bounces();
@@ -380,6 +492,7 @@ impl Tree {
 
                 node.update_bounces();
 
+                //create return value
                 let (min_value, max_value) = get_bouncies(&new_child);
                 let mut ret_tree = Tree::new();
                 ret_tree.root = Link::Node(Box::new(Node {
@@ -394,6 +507,8 @@ impl Tree {
     }
     pub fn insert(&mut self, arg: &Triangle) {
         let new_child = self.private_insert(arg);
+
+        //if we don't have new branch end execution
         match &new_child.root {
             Link::Empty => {
                 return;
@@ -401,6 +516,7 @@ impl Tree {
             _ => {}
         }
 
+        //create new root, where one branch is old tree and another is new branch
         let (min_old_value, max_old_value) = get_bouncies(&self);
         let (min_new_value, max_new_value) = get_bouncies(&new_child);
         let new_root = Link::Node(Box::new(Node {

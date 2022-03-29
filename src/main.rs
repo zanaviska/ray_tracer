@@ -36,7 +36,7 @@ fn get_image_part(
             );
 
             line.push(Vec3 {
-                x: (intersect as i32 as f32) * 255.,
+                x: (intersect.abs() - 1.) * 150.,
                 y: 1.0,
                 z: 0.0,
             });
@@ -51,20 +51,42 @@ fn get_image_part(
 }
 
 fn main() {
-    use std::time::Instant;
-    let now = Instant::now();
     let shape = read_file(Path::new("cow.obj"));
-
     let mut tr = Tree::new();
-
     for i in &shape {
         tr.insert(i);
     }
+    use std::time::Instant;
+    let now = Instant::now();
 
-    let height = 1920;
-    let width = 1080;
+    let height = 720;
+    let width = 720;
 
     const THREAD_COUNT: usize = 11;
+
+    // tr.func();
+    // return;
+
+    // let intersect = tr.does_intersect(
+    //     Vec3 {
+    //         x: 0.,
+    //         y: 0.,
+    //         z: 2.,
+    //     },
+    //     Vec3 {
+    //         x: 0.1,
+    //         y: 0.1,
+    //         z: 1.,
+    //     },
+    // );
+    // println!("{:?}", intersect);
+    // return;
+    /*
+    min {x:0.0122379996, y:-0.000986000057, z: -0.1111111999}
+    max {x:0.25218001, y:0.0871800035, z:0.220054001}
+    */
+    // (-0.1, 0.05)
+    // return;
 
     let x_min = -0.5;
     let x_max = 0.5;
@@ -100,7 +122,9 @@ fn main() {
             return acc;
         });
 
+    let elapsed = now.elapsed();
+    println!("ray tracing time: {:.2?}", elapsed);
     let _res = write_to_file(image);
     let elapsed = now.elapsed();
-    println!("Elapsed: {:.2?}", elapsed);
+    println!("writing time: {:.2?}", elapsed);
 }
