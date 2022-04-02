@@ -43,15 +43,6 @@ int main(int argc, char *argv[])
     // read file and insert in tree
 
     tree tr;
-    // tr.insert({point{0, 0, 0}, {1, 1, 1}, {2, 2, 2}});
-    // // tr.show();
-    // tr.insert({point{0, 0, 1}, {1, 1, 1}, {2, 2, 2}});
-    // // tr.show();
-    // tr.insert({point{-1, 0, 1}, {1, 1, 1}, {2, 2, 2}});
-    // // tr.show();
-    // tr.insert({point{-1, 0, 1}, {1, 5, 1}, {2, 2, 2}});
-    // // tr.show();
-    // return 0;
     std::ifstream fin(source);
     std::string line;
     std::vector<point> vertexes;
