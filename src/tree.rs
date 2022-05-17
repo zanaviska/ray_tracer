@@ -110,261 +110,47 @@ fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> f32 {
     dot_product(e2, qvec) * inv_det
 }
 
-fn ray_square_intersect(source: Vec3, direction: Vec3, vertexes: [Vec3; 4]) -> bool {
-    return triangle_intersection(source, direction, &[vertexes[2], vertexes[0], vertexes[1]])
-        != 0.
-        || triangle_intersection(source, direction, &[vertexes[2], vertexes[0], vertexes[3]])
-            != 0.;
-}
-
-/*
-( 0.0, 0.0, 2.0 )
-( 0.22727275, -0.03333487, 1.0 )
-( 0.184701, -0.0625733, 0.141112 )
-( 0.45416, 0.06693, 0.295318 )
-*/
-
-fn ray_cube_intersect_triangle(
-    source: Vec3,
+fn ray_cube_intersect_tana_version(
+    origin: Vec3,
     direction: Vec3,
-    min_vertex: Vec3,
-    max_vertex: Vec3,
+    min_values: Vec3,
+    max_values: Vec3,
 ) -> bool {
-    let mut result = ray_square_intersect(
-        source,
-        direction,
-        [
-            Vec3 {
-                x: min_vertex.x,
-                y: min_vertex.y,
-                z: min_vertex.z,
-            },
-            Vec3 {
-                x: max_vertex.x,
-                y: min_vertex.y,
-                z: min_vertex.z,
-            },
-            Vec3 {
-                x: max_vertex.x,
-                y: max_vertex.y,
-                z: min_vertex.z,
-            },
-            Vec3 {
-                x: min_vertex.x,
-                y: max_vertex.y,
-                z: min_vertex.z,
-            },
-        ],
-    );
-    result |= ray_square_intersect(
-        source,
-        direction,
-        [
-            Vec3 {
-                x: min_vertex.x,
-                y: min_vertex.y,
-                z: min_vertex.z,
-            },
-            Vec3 {
-                x: min_vertex.x,
-                y: max_vertex.y,
-                z: min_vertex.z,
-            },
-            Vec3 {
-                x: max_vertex.x,
-                y: max_vertex.y,
-                z: min_vertex.z,
-            },
-            Vec3 {
-                x: max_vertex.x,
-                y: min_vertex.y,
-                z: min_vertex.z,
-            },
-        ],
-    );
-    result |= ray_square_intersect(
-        source,
-        direction,
-        [
-            Vec3 {
-                x: min_vertex.x,
-                y: min_vertex.y,
-                z: min_vertex.z,
-            },
-            Vec3 {
-                x: min_vertex.x,
-                y: min_vertex.y,
-                z: max_vertex.z,
-            },
-            Vec3 {
-                x: max_vertex.x,
-                y: min_vertex.y,
-                z: max_vertex.z,
-            },
-            Vec3 {
-                x: max_vertex.x,
-                y: min_vertex.y,
-                z: min_vertex.z,
-            },
-        ],
-    );
-    result |= ray_square_intersect(
-        source,
-        direction,
-        [
-            Vec3 {
-                x: max_vertex.x,
-                y: max_vertex.y,
-                z: max_vertex.z,
-            },
-            Vec3 {
-                x: max_vertex.x,
-                y: min_vertex.y,
-                z: max_vertex.z,
-            },
-            Vec3 {
-                x: max_vertex.x,
-                y: min_vertex.y,
-                z: min_vertex.z,
-            },
-            Vec3 {
-                x: max_vertex.x,
-                y: max_vertex.y,
-                z: min_vertex.z,
-            },
-        ],
-    );
-    result |= ray_square_intersect(
-        source,
-        direction,
-        [
-            Vec3 {
-                x: max_vertex.x,
-                y: max_vertex.y,
-                z: max_vertex.z,
-            },
-            Vec3 {
-                x: max_vertex.x,
-                y: min_vertex.y,
-                z: max_vertex.z,
-            },
-            Vec3 {
-                x: min_vertex.x,
-                y: min_vertex.y,
-                z: max_vertex.z,
-            },
-            Vec3 {
-                x: min_vertex.x,
-                y: max_vertex.y,
-                z: max_vertex.z,
-            },
-        ],
-    );
-    result |= ray_square_intersect(
-        source,
-        direction,
-        [
-            Vec3 {
-                x: max_vertex.x,
-                y: max_vertex.y,
-                z: max_vertex.z,
-            },
-            Vec3 {
-                x: max_vertex.x,
-                y: max_vertex.y,
-                z: min_vertex.z,
-            },
-            Vec3 {
-                x: min_vertex.x,
-                y: max_vertex.y,
-                z: min_vertex.z,
-            },
-            Vec3 {
-                x: min_vertex.x,
-                y: max_vertex.y,
-                z: max_vertex.z,
-            },
-        ],
-    );
+    let mut txmin = (min_values.x - origin.x) / direction.x;
+    let mut txmax = (max_values.x - origin.x) / direction.x;
 
-    return result;
-}
-
-fn ray_cube_intersect_ray_time(
-    source: Vec3,
-    direction: Vec3,
-    min_vertex: Vec3,
-    max_vertex: Vec3,
-) -> bool {
-    let mut t_min = f32::MIN;
-    let mut t_max = f32::MAX;
-
-    let mut update_axis_result = |direction: f32, source: f32, min_vertex: f32, max_vertex: f32| {
-        let dir = direction - source;
-        if dir != 0. {
-            let tx1 = (min_vertex - source) / dir;
-            let tx2 = (max_vertex - source) / dir;
-
-            t_min = t_min.max(tx1.min(tx2));
-            t_max = t_max.min(tx1.max(tx2));
-        }
-    };
-
-    update_axis_result(direction.x, source.x, min_vertex.x, max_vertex.x);
-    update_axis_result(direction.y, source.y, min_vertex.y, max_vertex.y);
-    update_axis_result(direction.z, source.z, min_vertex.z, max_vertex.z);
-    return t_min <= t_max && 0. <= t_max;
-}
-
-fn ray_cube_intersect_cpp_version(
-    source: Vec3,
-    direction: Vec3,
-    min_vertex: Vec3,
-    max_vertex: Vec3,
-) -> bool {
-    let d = Vec3 {
-        x: direction.x - source.x,
-        y: direction.y - source.y,
-        z: direction.z - source.z,
-    };
-
-    let update_projection_result = |source: f32,
-                                    min_main: f32,
-                                    d_main: f32,
-                                    d_rest: f32,
-                                    source_rest: f32,
-                                    min_rest: f32,
-                                    max_rest: f32|
-     -> bool {
-        let mid = (min_main - source) / d_main * d_rest + source_rest;
-        return min_rest <= mid && mid <= max_rest;
-    };
-
-    macro_rules! update_projection_result {
-        ( $main:ident, $rest:ident ) => {
-            update_projection_result(
-                source.$main,
-                min_vertex.$main,
-                d.$main,
-                d.$rest,
-                source.$rest,
-                min_vertex.$rest,
-                max_vertex.$rest,
-            )
-        };
+    if txmin > txmax {
+        std::mem::swap(&mut txmin, &mut txmax);
     }
 
-    if update_projection_result! {x, y} && update_projection_result! {x, z} {
-        return true;
-    }
-    if update_projection_result! {y, x} && update_projection_result! {y, z} {
-        return true;
-    }
-    if update_projection_result! {z, y} && update_projection_result! {z, x} {
-        return true;
+    let mut tymin = (min_values.y - origin.y) / direction.y;
+    let mut tymax = (max_values.y - origin.y) / direction.y;
+
+    if tymin > tymax {
+        std::mem::swap(&mut tymin, &mut tymax);
     }
 
-    return false;
+    if (txmin > tymax) || (tymin > txmax) {
+        return false;
+    }
+
+    if tymin > txmin {
+        txmin = tymin;
+    }
+    if tymax < txmax {
+        txmax = tymax;
+    }
+    let mut tzmin = (min_values.z - origin.z) / direction.z;
+    let mut tzmax = (max_values.z - origin.z) / direction.z;
+
+    if tzmin > tzmax {
+        std::mem::swap(&mut tzmin, &mut tzmax);
+    }
+
+    if (txmin > tzmax) || (tzmin > txmax) {
+        return false;
+    }
+    return true;
 }
 
 //  (0.0, 0.0,  2.0  )
@@ -374,18 +160,8 @@ fn ray_cube_intersect_cpp_version(
 
 //TODO create better solution for intersection ray and cube
 fn ray_cube_intersect(source: Vec3, direction: Vec3, min_vertex: Vec3, max_vertex: Vec3) -> bool {
-    let triangle_version = ray_cube_intersect_triangle(source, direction, min_vertex, max_vertex);
-    let ray_time = ray_cube_intersect_ray_time(source, direction, min_vertex, max_vertex);
-    let cpp_version = ray_cube_intersect_cpp_version(source, direction, min_vertex, max_vertex);
-
-    // if working != debug {
-    //     println!(
-    //         "working: {}, debug: {}\n{:?} {:?} {:?} {:?}",
-    //         working, debug, source, direction, min_vertex, max_vertex
-    //     );
-    //     // panic!();
-    // }
-    return ray_time;
+    let tana_version = ray_cube_intersect_tana_version(source, direction, min_vertex, max_vertex);
+return tana_version;
 }
 
 impl Tree {

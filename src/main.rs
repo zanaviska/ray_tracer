@@ -51,7 +51,7 @@ fn get_image_part(
 }
 
 fn main() {
-    let shape = read_file(Path::new("cow.obj"));
+    let shape = read_file(Path::new("c:/Users/user/cow.obj"));
     let mut tr = Tree::new();
     for i in &shape {
         tr.insert(i);
