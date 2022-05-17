@@ -81,7 +81,7 @@ fn combine_tree_volume(left: &Tree, right: &Tree, other: &Tree) -> f32 {
 }
 
 // https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
-fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> f32 {
+fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> Option<Vec3> {
     let e1 = triangle[1] - triangle[0];
     let e2 = triangle[2] - triangle[0];
 
@@ -91,27 +91,27 @@ fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> f32 {
 
     //ray is parallel to the plane
     if det < 1e-8 && det > -1e-8 {
-        return 0.;
+        return None;
     }
 
     let inv_det = 1. / det;
     let tvec = orig - triangle[0];
     let u = dot_product(tvec, pvec) * inv_det;
     if u < 0. || u > 1. {
-        return 0.;
+        return None;
     }
 
     let qvec = cross_product(tvec, e1);
     let v = dot_product(dir, qvec) * inv_det;
     if v < 0. || u + v > 1. {
-        return 0.;
+        return None;
     }
 
     let t = dot_product(e2, qvec) * inv_det;
-    return t;
+    return Some(orig + dir*t);
 }
 
-fn ray_cube_intersect_tana_version(
+fn ray_cube_intersect(
     origin: Vec3,
     direction: Vec3,
     min_values: Vec3,
@@ -154,11 +154,6 @@ fn ray_cube_intersect_tana_version(
     return true;
 }
 
-fn ray_cube_intersect(source: Vec3, direction: Vec3, min_vertex: Vec3, max_vertex: Vec3) -> bool {
-    let tana_version = ray_cube_intersect_tana_version(source, direction, min_vertex, max_vertex);
-    return tana_version;
-}
-
 impl Tree {
     pub fn new() -> Tree {
         Tree { root: Link::Empty }
@@ -190,24 +185,24 @@ impl Tree {
             )
         );
     }
-    pub fn does_intersect(&self, source: Vec3, direction: Vec3) -> f32 {
+    pub fn does_intersect(&self, source: Vec3, direction: Vec3) -> bool {
         match &self.root {
             Link::Empty => {
-                return 0.;
+                return false;
             }
             Link::Triangle(triangle) => {
-                return triangle_intersection(source, direction, triangle);
+                return triangle_intersection(source, direction, triangle).is_some();
             }
             Link::Node(node) => {
                 // println!("{:?} {:?}", node.min_value, node.max_value);
                 if ray_cube_intersect(source, direction, node.min_value, node.max_value) {
                     let left_child_res = node.left.does_intersect(source, direction);
-                    if left_child_res != 0. {
+                    if left_child_res {
                         return left_child_res;
                     }
                     return node.right.does_intersect(source, direction);
                 }
-                return 0.;
+                return false;
             }
         }
     }
