@@ -107,7 +107,8 @@ fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> f32 {
         return 0.;
     }
 
-    dot_product(e2, qvec) * inv_det
+    let t = dot_product(e2, qvec) * inv_det;
+    return t;
 }
 
 fn ray_cube_intersect_tana_version(
@@ -153,15 +154,9 @@ fn ray_cube_intersect_tana_version(
     return true;
 }
 
-//  (0.0, 0.0,  2.0  )
-//  (0.1, 0.1,  1.0  )
-//  (0.494932, 0.0233132,  0.163541)
-//  (0.50907, 0.029493,  0.178999 )
-
-//TODO create better solution for intersection ray and cube
 fn ray_cube_intersect(source: Vec3, direction: Vec3, min_vertex: Vec3, max_vertex: Vec3) -> bool {
     let tana_version = ray_cube_intersect_tana_version(source, direction, min_vertex, max_vertex);
-return tana_version;
+    return tana_version;
 }
 
 impl Tree {
