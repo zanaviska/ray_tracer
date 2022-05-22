@@ -49,26 +49,31 @@ impl Scene {
     ) -> Vec<Vec<Vec3>> {
         let width_fov = 80. / 360. * std::f32::consts::PI;
         let height_fov = height as f32 * width_fov / width as f32;
-        let before_rotate = Vec3 {
+        let mut tr = Vec3 {
             x: distance * (width_fov / 2.).tan().abs(),
             y: distance * (height_fov / 2.).tan().abs(),
             z: 0.,
         };
-        let camera = Vec3 {
+        let mut camera = Vec3 {
             x: 0.,
             y: 0.,
             z: distance,
         };
-        let dx = Vec3 {
-            x: before_rotate.x * 2. / (width - 1) as f32,
+        let mut dx = Vec3 {
+            x: tr.x * 2. / (width - 1) as f32,
             y: 0.,
             z: 0.,
         };
-        let dy = Vec3 {
+        let mut dy = Vec3 {
             x: 0.,
-            y: before_rotate.y * 2. / (height - 1) as f32,
+            y: tr.y * 2. / (height - 1) as f32,
             z: 0.,
         };
+        
+        tr.rotate(alfa, beta);
+        camera.rotate(alfa, beta);
+        dx.rotate(alfa, beta);
+        dy.rotate(alfa, beta);
 
         //todo add rotation
 
@@ -76,7 +81,7 @@ impl Scene {
 
         let thread_count = 11;
         let lines_per_thread = (height + thread_count - 1) / thread_count;
-        let bl = before_rotate * (-1.);
+        let bl = tr * (-1.);
         
         let mut tree_temp = Tree::new();
         std::mem::swap(&mut tree_temp, &mut self.tree);

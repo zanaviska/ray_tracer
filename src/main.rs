@@ -26,7 +26,7 @@ fn main() {
     
     let center = Vec3 {x: 0., y: 0., z: 0.};
     
-    let image = scene.render(6., 0., 0., center, height, width);
+    let image = scene.render(6., std::f32::consts::PI/4., 0.*std::f32::consts::PI/3., center, height, width);
     
     let elapsed = now.elapsed();
     println!("ray tracing time: {:.2?}", elapsed);

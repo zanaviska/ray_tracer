@@ -18,6 +18,21 @@ impl Vec3 {
         y: f32::MIN,
         z: f32::MIN,
     };
+    pub fn rotate(&mut self, alfa: f32, beta: f32)
+    {
+        let alfa_sin = alfa.sin();
+        let alfa_cos = alfa.cos();
+        let beta_sin = beta.sin();
+        let beta_cos = beta.cos();
+        let temp = Vec3 {
+            x: self.x*alfa_cos - self.z*alfa_sin,
+            y: self.y,
+            z: self.x*alfa_sin + self.z*alfa_cos
+        };
+        self.x = temp.x*beta_cos - temp.z*beta_sin;
+        self.y = temp.y;
+        self.z = temp.x*beta_sin + temp.z*beta_cos;
+    }
 }
 
 impl ops::Mul<f32> for Vec3 {
