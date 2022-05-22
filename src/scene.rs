@@ -1,3 +1,6 @@
+use std::sync::Arc;
+use std::thread;
+
 use crate::tree::{Tree, Triangle};
 use crate::vec3::Vec3;
 
@@ -25,9 +28,18 @@ impl Scene {
     pub fn add_light(&mut self, pos: Vec3, color: Vec3) {
         self.lights.push(Light { pos, color });
     }
+    fn get_pixel(tree: &Tree, source: Vec3, middle: Vec3) -> Vec3 {
+        let intersect = tree.does_intersect(source, middle);
+        let color = if intersect { 250 } else { 0 };
+        Vec3 {
+            x: color as f32,
+            y: color as f32,
+            z: color as f32,
+        }
+    }
 
     pub fn render(
-        &self,
+        &mut self,
         distance: f32,
         alfa: f32,
         beta: f32,
@@ -60,24 +72,49 @@ impl Scene {
 
         //todo add rotation
 
-        let mut image: Vec<Vec<Vec3>> = Vec::new();
-        let mut y = before_rotate * (-1.);
-        for _i in 0..height {
-            let mut x = y;
-            let mut line: Vec<Vec3> = Vec::new();
-            for _j in 0..width {
-                let intersect = self.tree.does_intersect(camera, x);
-                let color = if intersect { 250 } else { 0 };
-                line.push(Vec3 {
-                    x: color as f32,
-                    y: color as f32,
-                    z: color as f32,
-                });
-                x = x + dx;
-            }
-            image.push(line);
-            y = y + dy
-        }
-        image
+        // let mut image: Vec<Vec<Vec3>> = Vec::new();
+
+        let thread_count = 11;
+        let lines_per_thread = (height + thread_count - 1) / thread_count;
+        let bl = before_rotate * (-1.);
+        
+        let mut tree_temp = Tree::new();
+        std::mem::swap(&mut tree_temp, &mut self.tree);
+        let tree_arc = Arc::new(tree_temp);
+
+        let threads: Vec<std::thread::JoinHandle<Vec<Vec<Vec3>>>> = (0..thread_count)
+            .into_iter()
+            .map(|idx| {
+                let tree = Arc::clone(&tree_arc);
+                let min_height = idx * lines_per_thread;
+                let max_height = (idx + 1) * lines_per_thread;
+                let mut y = bl + dy * min_height as f32;
+                thread::spawn(move || {
+                    let mut image: Vec<Vec<Vec3>> = Vec::new();
+                    for _i in min_height..max_height {
+                        let mut x = y;
+                        let mut line: Vec<Vec3> = Vec::new();
+                        for _j in 0..width {
+                            line.push(Scene::get_pixel(&tree, camera, x));
+                            x = x + dx;
+                        }
+                        image.push(line);
+                        y = y + dy;
+                    }
+                    return image;
+                })
+            })
+            .collect();
+        let image = threads
+            .into_iter()
+            .fold(Vec::<Vec<Vec3>>::new(), |mut acc, cur| {
+                let current = cur.join().unwrap();
+                acc.splice(acc.len().., current.into_iter());
+                return acc;
+            });
+
+        let _ = std::mem::replace(&mut self.tree, Arc::try_unwrap(tree_arc).unwrap());
+
+        return image;
     }
 }

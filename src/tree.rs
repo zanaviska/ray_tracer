@@ -2,10 +2,12 @@ use crate::vec3::{cross_product, dot_product, max_coor, min_coor, Vec3};
 
 pub type Triangle = [Vec3; 3];
 
+#[derive(Debug)]
 pub struct Tree {
     root: Link,
 }
 
+#[derive(Debug)]
 struct Node {
     min_value: Vec3,
     max_value: Vec3,
@@ -23,6 +25,7 @@ impl Node {
     }
 }
 
+#[derive(Debug)]
 enum Link {
     Empty,
     Triangle(Triangle),
