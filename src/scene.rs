@@ -1,9 +1,11 @@
+use std::cmp;
 use std::sync::Arc;
 use std::thread;
 
 use crate::tree::{Tree, Triangle};
-use crate::vec3::Vec3;
+use crate::vec3::{min_coor, max_coor, Vec3, dot_product, square_distance};
 
+#[derive(Debug)]
 struct Light {
     pos: Vec3,
     color: Vec3,
@@ -13,11 +15,21 @@ pub struct Scene {
     lights: Vec<Light>,
 }
 
+fn cos(first: Vec3, middle: Vec3, second: Vec3) -> f32 {
+    let dot = dot_product(first-middle, second-middle);
+    let d1 = square_distance(first, middle).sqrt();
+    let d2 = square_distance(second, middle).sqrt();
+    dot/(d1*d2)
+}
+
 impl Scene {
     pub fn new() -> Self {
         Scene {
             tree: Tree::new(),
-            lights: vec![],
+            lights: vec![Light{
+                pos: Vec3 {x: 5., y: 5., z: 5.},
+                color: Vec3{x: 255., y: 255., z:255.}
+            }],
         }
     }
     pub fn add_to_tree(&mut self, shape: Vec<Triangle>) {
@@ -28,14 +40,53 @@ impl Scene {
     pub fn add_light(&mut self, pos: Vec3, color: Vec3) {
         self.lights.push(Light { pos, color });
     }
-    fn get_pixel(tree: &Tree, source: Vec3, middle: Vec3) -> Vec3 {
+    fn get_pixel(tree: &Tree, lights: &Vec<Light>, source: Vec3, middle: Vec3) -> Vec3 {
         let intersect = tree.does_intersect(source, middle);
-        let color = if intersect { 250 } else { 0 };
-        Vec3 {
-            x: color as f32,
-            y: color as f32,
-            z: color as f32,
+        if intersect.is_none() {
+            return Vec3 {
+                x: 0.,
+                y: 0.,
+                z: 0.,
+            };
         }
+        let mut color = Vec3 {
+            x: 0.,
+            y: 0.,
+            z: 0.,
+        };
+        let intersect = intersect.unwrap();
+        for light in lights {
+            let lighh_point = tree.does_intersect(light.pos, intersect);
+            if intersect != lighh_point.unwrap() {
+                color = max_coor(
+                    color,
+                    Vec3 {
+                        x: light.color.x.min(100.),
+                        y: light.color.y.min(100.),
+                        z: light.color.z.min(100.),
+                    },
+                );
+            } else {
+                color = max_coor(
+                    color,
+                    Vec3 {
+                        x: 100.,
+                        y: 100.,
+                        z: 100.,
+                    },
+                );
+                color = color + light.color * cos(source, intersect, light.pos);
+                color = min_coor(
+                    color,
+                    Vec3 {
+                        x: 255.,
+                        y: 255.,
+                        z: 255.,
+                    },
+                );
+            }
+        }
+        return color;
     }
 
     pub fn render(
@@ -81,13 +132,17 @@ impl Scene {
         let lines_per_thread = (height + thread_count - 1) / thread_count;
 
         let mut tree_temp = Tree::new();
+        let mut lights_temp: Vec<Light> = Vec::new();
         std::mem::swap(&mut tree_temp, &mut self.tree);
+        std::mem::swap(&mut lights_temp, &mut self.lights);
         let tree_arc = Arc::new(tree_temp);
+        let light_arc = Arc::new(lights_temp);
 
         let threads: Vec<std::thread::JoinHandle<Vec<Vec<Vec3>>>> = (0..thread_count)
             .into_iter()
             .map(|idx| {
                 let tree = Arc::clone(&tree_arc);
+                let light = Arc::clone(&light_arc);
                 let min_height = idx * lines_per_thread;
                 let max_height = (idx + 1) * lines_per_thread;
                 let mut y = bl + dy * min_height as f32;
@@ -97,7 +152,7 @@ impl Scene {
                         let mut x = y;
                         let mut line: Vec<Vec3> = Vec::new();
                         for _j in 0..width {
-                            line.push(Scene::get_pixel(&tree, camera, x));
+                            line.push(Scene::get_pixel(&tree, &light, camera, x));
                             x = x + dx;
                         }
                         image.push(line);
@@ -116,6 +171,7 @@ impl Scene {
             });
 
         let _ = std::mem::replace(&mut self.tree, Arc::try_unwrap(tree_arc).unwrap());
+        let _ = std::mem::replace(&mut self.lights, Arc::try_unwrap(light_arc).unwrap());
 
         return image;
     }

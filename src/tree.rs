@@ -1,4 +1,4 @@
-use crate::vec3::{cross_product, dot_product, max_coor, min_coor, Vec3};
+use crate::vec3::{cross_product, dot_product, max_coor, min_coor, square_distance, Vec3};
 
 pub type Triangle = [Vec3; 3];
 
@@ -111,15 +111,10 @@ fn triangle_intersection(orig: Vec3, dir: Vec3, triangle: &Triangle) -> Option<V
     }
 
     let t = dot_product(e2, qvec) * inv_det;
-    return Some(orig + dir*t);
+    return Some(orig + dir * t);
 }
 
-fn ray_cube_intersect(
-    origin: Vec3,
-    direction: Vec3,
-    min_values: Vec3,
-    max_values: Vec3,
-) -> bool {
+fn ray_cube_intersect(origin: Vec3, direction: Vec3, min_values: Vec3, max_values: Vec3) -> bool {
     let mut txmin = (min_values.x - origin.x) / direction.x;
     let mut txmax = (max_values.x - origin.x) / direction.x;
 
@@ -188,24 +183,33 @@ impl Tree {
             )
         );
     }
-    pub fn does_intersect(&self, source: Vec3, middle: Vec3) -> bool {
+    pub fn does_intersect(&self, source: Vec3, middle: Vec3) -> Option<Vec3> {
         match &self.root {
             Link::Empty => {
-                return false;
+                return None;
             }
             Link::Triangle(triangle) => {
-                return triangle_intersection(source, middle - source, triangle).is_some();
+                return triangle_intersection(source, middle - source, triangle);
             }
             Link::Node(node) => {
                 // println!("{:?} {:?}", node.min_value, node.max_value);
                 if ray_cube_intersect(source, middle - source, node.min_value, node.max_value) {
                     let left_child_res = node.left.does_intersect(source, middle);
-                    if left_child_res {
+                    let right_child_res = node.right.does_intersect(source, middle);
+                    if left_child_res.is_none() {
+                        return right_child_res;
+                    }
+                    if right_child_res.is_none() {
                         return left_child_res;
                     }
-                    return node.right.does_intersect(source, middle);
+                    if square_distance(source, left_child_res.unwrap())
+                        < square_distance(source, right_child_res.unwrap())
+                    {
+                        return left_child_res;
+                    }
+                    return right_child_res;
                 }
-                return false;
+                return None;
             }
         }
     }

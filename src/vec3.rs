@@ -18,20 +18,19 @@ impl Vec3 {
         y: f32::MIN,
         z: f32::MIN,
     };
-    pub fn rotate(&mut self, alfa: f32, beta: f32)
-    {
+    pub fn rotate(&mut self, alfa: f32, beta: f32) {
         let alfa_sin = alfa.sin();
         let alfa_cos = alfa.cos();
         let beta_sin = beta.sin();
         let beta_cos = beta.cos();
         let temp = Vec3 {
-            x: self.x*alfa_cos - self.z*alfa_sin,
+            x: self.x * alfa_cos - self.z * alfa_sin,
             y: self.y,
-            z: self.x*alfa_sin + self.z*alfa_cos
+            z: self.x * alfa_sin + self.z * alfa_cos,
         };
-        self.x = temp.x*beta_cos - temp.z*beta_sin;
+        self.x = temp.x * beta_cos - temp.z * beta_sin;
         self.y = temp.y;
-        self.z = temp.x*beta_sin + temp.z*beta_cos;
+        self.z = temp.x * beta_sin + temp.z * beta_cos;
     }
 }
 
@@ -94,7 +93,9 @@ impl PartialOrd for Vec3 {
 
 impl PartialEq for Vec3 {
     fn eq(&self, other: &Self) -> bool {
-        self.x.eq(&other.x) && self.y.eq(&other.y) && self.z.eq(&other.z)
+        let eps = 1e-5;
+        (self.x - other.x).abs() < eps && (self.y - other.y).abs() < eps && (self.z - other.z).abs() < eps
+        // self.x.eq(&other.x) && self.y.eq(&other.y) && self.z.eq(&other.z)
     }
 }
 
@@ -124,4 +125,11 @@ pub fn max_coor(lhs: Vec3, rhs: Vec3) -> Vec3 {
         y: lhs.y.max(rhs.y),
         z: lhs.z.max(rhs.z),
     }
+}
+
+pub fn square_distance(arg1: Vec3, arg2: Vec3) -> f32 {
+    let dx = arg1.x - arg2.x;
+    let dy = arg1.y - arg2.y;
+    let dz = arg1.z - arg2.z;
+    dx * dx + dy * dy + dz * dz
 }
