@@ -1,6 +1,6 @@
 use crate::vec3::{cross_product, dot_product, max_coor, min_coor, Vec3};
 
-type Triangle = [Vec3; 3];
+pub type Triangle = [Vec3; 3];
 
 pub struct Tree {
     root: Link,
@@ -185,22 +185,22 @@ impl Tree {
             )
         );
     }
-    pub fn does_intersect(&self, source: Vec3, direction: Vec3) -> bool {
+    pub fn does_intersect(&self, source: Vec3, middle: Vec3) -> bool {
         match &self.root {
             Link::Empty => {
                 return false;
             }
             Link::Triangle(triangle) => {
-                return triangle_intersection(source, direction, triangle).is_some();
+                return triangle_intersection(source, middle - source, triangle).is_some();
             }
             Link::Node(node) => {
                 // println!("{:?} {:?}", node.min_value, node.max_value);
-                if ray_cube_intersect(source, direction, node.min_value, node.max_value) {
-                    let left_child_res = node.left.does_intersect(source, direction);
+                if ray_cube_intersect(source, middle - source, node.min_value, node.max_value) {
+                    let left_child_res = node.left.does_intersect(source, middle);
                     if left_child_res {
                         return left_child_res;
                     }
-                    return node.right.does_intersect(source, direction);
+                    return node.right.does_intersect(source, middle);
                 }
                 return false;
             }
