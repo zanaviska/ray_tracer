@@ -69,20 +69,17 @@ impl Scene {
             y: tr.y * 2. / (height - 1) as f32,
             z: 0.,
         };
-        
+
         tr.rotate(alfa, beta);
         camera.rotate(alfa, beta);
         dx.rotate(alfa, beta);
         dy.rotate(alfa, beta);
-
-        //todo add rotation
-
-        // let mut image: Vec<Vec<Vec3>> = Vec::new();
+        camera = camera + camera_direction;
+        let bl = tr * (-1.) + camera_direction;
 
         let thread_count = 11;
         let lines_per_thread = (height + thread_count - 1) / thread_count;
-        let bl = tr * (-1.);
-        
+
         let mut tree_temp = Tree::new();
         std::mem::swap(&mut tree_temp, &mut self.tree);
         let tree_arc = Arc::new(tree_temp);
